@@ -3,7 +3,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const http2 = require('http2');
 const express = require('express');
 const mongoose = require('mongoose'); //подключение БД Монго
-const cors = require('cors'); //Подключение
+const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
 
@@ -34,6 +34,7 @@ mongoose.connect(mestodb)
 /* Подключение к событию ошибки */
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 app.use(limiter);
+app.use(cors);
 app.use(bodyParser.json()); // настройка парсера для приёма JSON
 
 /* Мидлвара добавления user в каждый запрос */
@@ -44,23 +45,6 @@ app.use(bodyParser.json()); // настройка парсера для приё
   next();
 }); */
 
-/* Список разрешённых сайтов */
-const allowedList = ['https://mesto.frontend.akula.nomoreparties.co', 'http://mesto.frontend.akula.nomoreparties.co'];
-
-/* Настройки CORS */
-const corsOptions = {
-  origin: "*",
-  methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
-  //preflightContinue: false,
-  optionsSuccessStatus: 204
-}
-app.options('*', cors({
-  origin: '*',
-  credentials: true
-}))
-app.use(cors(corsOptions)); // Подключение CORS
 app.use(requestLogger); // подключаем логгер запросов
 
 /* Добавление роутов */
