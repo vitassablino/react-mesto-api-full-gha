@@ -43,7 +43,19 @@ app.use(bodyParser.json()); // настройка парсера для приё
   };
   next();
 }); */
-app.use(cors()); // Подключение CORS
+
+/* Список разрешённых сайтов */
+const allowedList = ['https://mesto.frontend.akula.nomoreparties.co', 'http://mesto.frontend.akula.nomoreparties.co'];
+
+/* Настройки CORS */
+const corsOptions = {
+  origin: allowedList,
+  methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}
+app.use(cors(corsOptions)); // Подключение CORS
 app.use(requestLogger); // подключаем логгер запросов
 
 /* Добавление роутов */
