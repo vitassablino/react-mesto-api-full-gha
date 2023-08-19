@@ -1,5 +1,5 @@
 const authSetting = {
-  url: "https://auth.nomoreparties.co",
+  url: "https://api.mesto.frontend.akula.nomoreparties.co",
   headers: {
     "Content-Type": "application/json",
   },
@@ -19,7 +19,7 @@ class Auth {
   }
 
   getRegistrationUser({ password, email }) {
-              console.log(password, email);
+// console.log(password, email);
 
     return fetch(`${this._url}/signup`, {
       method: "POST",
