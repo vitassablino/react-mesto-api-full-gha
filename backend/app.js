@@ -52,9 +52,14 @@ const corsOptions = {
   origin: "*",
   methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
   preflightContinue: false,
   optionsSuccessStatus: 204
 }
+app.options('*', cors({
+  origin: '*',
+  credentials: true
+}))
 app.use(cors(corsOptions)); // Подключение CORS
 app.use(requestLogger); // подключаем логгер запросов
 
