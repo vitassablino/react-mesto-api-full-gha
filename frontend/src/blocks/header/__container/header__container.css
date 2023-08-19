@@ -1,0 +1,8 @@
+.header__container {
+  display: block;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 24px;
+  margin: 0;
+  width: auto;
+}

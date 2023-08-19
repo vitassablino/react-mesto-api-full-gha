@@ -1,0 +1,30 @@
+.popup__form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  align-self: center;
+  justify-self: center;
+  background-color: white;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - (19px * 2));
+  max-width: 430px;
+  /* min-height: 330px; */
+  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  margin: 0;
+  padding: 34px 36px 37px;
+  transition: all 1s linear;
+}
+
+@media screen and (max-width: 719px) {
+  .popup__form {
+    height: 322px;
+    width: 282px;
+    padding: 25px 22px;
+    color: black;
+  }
+}

@@ -1,0 +1,12 @@
+.element {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 361px;
+  min-width: 282px;
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0 0 30px;
+}

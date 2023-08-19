@@ -1,0 +1,16 @@
+.header__aside {
+  display: block;
+  box-sizing: border-box;
+  margin-top: -142px;
+  padding: 40px 30px;
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
+  transition: margin-top 0.3s ease-in-out;
+}
+
+@media screen and (min-width: 768px) {
+  .header__aside {
+    display: none;
+  }
+}

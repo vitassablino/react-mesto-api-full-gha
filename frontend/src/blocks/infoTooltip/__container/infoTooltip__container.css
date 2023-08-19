@@ -1,0 +1,16 @@
+.infoTooltip__container {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 50px 18px;
+  width: 282px;
+  background-color: white;
+  border-radius: 10px;
+}
+
+@media screen and (min-width: 768px) {
+  .infoTooltip__container {
+    padding: 60px 36px;
+    width: 430px;
+  }
+}

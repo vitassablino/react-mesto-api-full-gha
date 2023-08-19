@@ -1,0 +1,14 @@
+.popup_active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* @keyframes scaling-down {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0);
+  }
+}
+ */

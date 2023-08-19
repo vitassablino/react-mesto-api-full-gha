@@ -1,0 +1,12 @@
+.element__pic-container {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.element__pic-container::after {
+  display: block;
+  content: "";
+  padding-bottom: 100%;
+}

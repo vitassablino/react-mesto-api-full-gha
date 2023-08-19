@@ -1,0 +1,15 @@
+.header__burger {
+  display: block;
+  padding: 0;
+  width: 24px;
+  height: 21px;
+  cursor: pointer;
+  border: none;
+  background-color: inherit;
+}
+
+@media screen and (min-width: 768px) {
+  .header__burger {
+    display: none;
+  }
+}

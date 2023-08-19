@@ -1,0 +1,27 @@
+.profile__edit-button {
+  padding: 0;
+  background-color: black;
+  width: 24px;
+  height: 24px;
+  align-self: center;
+  border: 1px solid #ffffff;
+  grid-area: profile__button;
+  cursor: pointer;
+  transition: opacity 0.6s linear;
+  display: flex;
+  justify-content: center;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M10 1.32827L2.60377 8.7666L1.28302 7.41936L8.66038 0L10 1.32827ZM0 10L1.96226 9.41177L0.584906 8.08349L0 10Z' fill='white'/%3e%3c/svg%3e ");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+@media screen and (max-width: 719px) {
+  .profile__edit-button {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.profile__edit-button:hover {
+  opacity: 0.6;
+}

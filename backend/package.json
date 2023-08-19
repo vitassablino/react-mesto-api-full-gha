@@ -1,0 +1,39 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "eslint  ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/vitassablino/express-mesto-gha.git"
+  },
+  "author": "Akula Viktor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vitassablino/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/vitassablino/express-mesto-gha#readme",
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "celebrate": "^15.0.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.8.0",
+    "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.3.4",
+    "validator": "^13.9.0"
+  }
+}
