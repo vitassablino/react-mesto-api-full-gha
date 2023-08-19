@@ -38,20 +38,22 @@ function App() {
     setIsInfoTooltipOpen,
   ];
   const [cards, setCards] = useState([]);
+  const [checkToken, setCheckToken] = useState(false);
+
 
   /* Проверка jwt и установка соотв.-их стейтов */
   useEffect(() => {
     if (localStorage.getItem("jwt")) {
-      auth
-        .checkValidityUser(localStorage.getItem("jwt"))
-        .then(({ data }) => {
-          setLoggedIn(true);
-          setUserEmail(data.email);
-        })
-        .then(() => navigate("/", { replace: true }))
+      setCheckToken(true);
+      auth.getContent()
+      .then((res) => {
+        setLoggedIn(true);
+        setUserEmail(res.data.email);
+      })
+/*         .then(() => navigate("/", { replace: true })) */
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [navigate]);
 
   /* Функция выхода */
   function handleSignOut() {
@@ -72,7 +74,9 @@ function App() {
         .then((res) => {
           const [userData, cardsArray] = res;
           setCards(cardsArray);
+          console.log("начальные карточки установлены");
           setCurrentUser(userData);
+          console.log("Данные пользователя установлены")
         })
         .catch((err) => console.log(err));
     }
@@ -171,7 +175,7 @@ function App() {
       .then((data) => {
         navigate("/signin");
         setUserEmail(data.email);
-        isInfoTooltipOpen({ isOpen: true, status: true });
+        setIsInfoTooltipOpen({ isOpen: true, status: true });
       })
       .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
   }
@@ -185,7 +189,8 @@ function App() {
           localStorage.setItem("jwt", data.token);
           setLoggedIn(true);
           setUserEmail(userData.email);
-          navigate("/");
+          setCurrentUser(data);
+          navigate("/", { replace: true });
         }
       })
       .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
@@ -209,6 +214,7 @@ function App() {
                 <ProtectedRouteElement
                   element={Main}
                   loggedIn={loggedIn}
+                  checkToken={checkToken}
                   onEditProfile={setIsEditProfilePopupOpen} // редактирование профиля
                   onAddPlace={setIsAddCardPopupOpen} // добавление карточки
                   onEditAvatar={setIsEditAvatarPopupOpen} // редактирование аватара

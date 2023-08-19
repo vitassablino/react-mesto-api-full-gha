@@ -36,6 +36,7 @@ db.on('error', console.error.bind(console, 'ошибка подключения 
 app.use(limiter);
 app.use(cors);
 app.use(bodyParser.json()); // настройка парсера для приёма JSON
+app.use(cookieParser());
 
 /* Мидлвара добавления user в каждый запрос */
 /* app.use((req, res, next) => {

@@ -19,12 +19,14 @@ class Auth {
   }
 
   getRegistrationUser({ password, email }) {
-// console.log(password, email);
+ //console.log(password, email);
 
     return fetch(`${this._url}/signup`, {
       method: "POST",
-      headers: this._headers,
-      credentials: 'include',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         password: password,
         email: email,
@@ -32,19 +34,31 @@ class Auth {
     }).then(this.#checkResponse);
   }
 
-  getAuthorizationUser({ password, email }) {
+  getAuthorizationUser(data) {
+    //console.log(data);
     return fetch(`${this._url}/signin`, {
       method: "POST",
       headers: this._headers,
       credentials: 'include',
       body: JSON.stringify({
-        password: password,
-        email: email,
+        password: data.password,
+        email: data.email,
       }),
-    }).then(this.#checkResponse);
+    }).then(this.#checkResponse)
+    .then((data) => {
+      localStorage.setItem('jwt', data.token)
+      return data;
+    });
   }
 
-  checkValidityUser(jwt) {
+  getContent() {
+    return fetch(`${this._url}/users/me`, {
+      method: "GET",
+      credentials: 'include',  
+    }).then(this.#checkResponse);
+  };
+  
+/*   checkValidityUser(jwt) {
     return fetch(`${this._url}/users/me`, {
       method: "GET",
       headers: {
@@ -53,7 +67,7 @@ class Auth {
       },
       credentials: 'include',
     }).then(this.#checkResponse);
-  }
+  } */
 }
 
 const auth = new Auth(authSetting);

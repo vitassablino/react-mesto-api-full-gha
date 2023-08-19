@@ -38,7 +38,7 @@ function AuthForm({ title, btnText, handleSubmit, children }) {
             name="password"
             className="auth-form__input"
             placeholder="Пароль"
-            minLength="2"
+            minLength="4"
             maxLength="30"
             onChange={handleChange}
             required

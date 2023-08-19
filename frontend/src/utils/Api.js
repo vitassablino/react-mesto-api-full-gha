@@ -15,6 +15,7 @@ class Api {
   getUserData() {
     return fetch(this._url + "/users/me", {
       method: "GET",
+      credentials: 'include',
       headers: this._headers,
     }).then(this.#checkResponse);
   }
@@ -23,6 +24,7 @@ class Api {
     console.log(data);
     return fetch(this._url + "/users/me", {
       method: "PATCH",
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name: data.name,
@@ -31,10 +33,11 @@ class Api {
     }).then(this.#checkResponse);
   }
 
-  /* Получение ствртовых каточек */
+  /* Получение стартовых каточек */
   getInitialCards() {
     return fetch(this._url + "/cards", {
       method: "GET",
+      credentials: 'include',
       headers: this._headers,
     }).then(this.#checkResponse);
   }
@@ -48,6 +51,7 @@ class Api {
   like(id) {
     return fetch(this._url + `/cards/${id}/likes`, {
       method: "PUT",
+      credentials: 'include',
       headers: this._headers,
     }).then(this.#checkResponse);
   }
@@ -56,6 +60,7 @@ class Api {
   notLike(id) {
     return fetch(this._url + `/cards/${id}/likes`, {
       method: "DELETE",
+      credentials: 'include',
       headers: this._headers,
     }).then(this.#checkResponse);
   }
@@ -72,6 +77,7 @@ class Api {
     console.log(items);
     return fetch(this._url + "/cards", {
       method: "POST",
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name: items.cardName,
@@ -83,6 +89,7 @@ class Api {
   delete(id) {
     return fetch(this._url + `/cards/${id}`, {
       method: "DELETE",
+      credentials: 'include',
       headers: this._headers,
     }).then(this.#checkResponse);
   }
@@ -90,6 +97,7 @@ class Api {
   editAvatar(items) {
     return fetch(this._url + "/users/me/avatar", {
       method: "PATCH",
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         avatar: items.avatar,
@@ -109,7 +117,6 @@ const apiData = {
 const apiYandexCloud = {
   url: "https://api.mesto.frontend.akula.nomoreparties.co",
   headers: {
-    authorization: "44c0c0c8-2249-4c66-a825-6f516eb82eac",
     "Content-Type": "application/json",
   },
 }
