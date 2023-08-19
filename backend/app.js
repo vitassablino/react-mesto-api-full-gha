@@ -53,7 +53,7 @@ const corsOptions = {
   methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  preflightContinue: false,
+  //preflightContinue: false,
   optionsSuccessStatus: 204
 }
 app.options('*', cors({
