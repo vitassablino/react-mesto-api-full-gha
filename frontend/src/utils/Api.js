@@ -106,5 +106,9 @@ const apiData = {
   },
 };
 
-const api = new Api(apiData);
+const apiYandexCloud = {
+  url: "api.mesto.frontend.akula.nomoreparties.co"
+}
+
+const api = new Api(apiYandexCloud);
 export default api;
