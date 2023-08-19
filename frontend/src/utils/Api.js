@@ -107,7 +107,7 @@ const apiData = {
 };
 
 const apiYandexCloud = {
-  url: "api.mesto.frontend.akula.nomoreparties.co"
+  url: "https://api.mesto.frontend.akula.nomoreparties.co"
 }
 
 const api = new Api(apiYandexCloud);
