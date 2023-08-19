@@ -26,11 +26,11 @@ const limiter = rateLimit({
 const { requestLogger, errorLogger } = require('./middlewares/logger'); // Подключение логгеров
 
 /* Адрес БД */
-const mestodb = 'mongodb://localhost:27017/mestodb';
+const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
 /* Получение подключения */
 const db = mongoose.connection;
 /* Подключение к серверу Mongo */
-mongoose.connect(mestodb)
+mongoose.connect(mestodb, {useNewUrlParser: true, useUnifiedTopology: true });
 /* Подключение к событию ошибки */
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 app.use(limiter);
