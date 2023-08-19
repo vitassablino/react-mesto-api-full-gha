@@ -49,7 +49,7 @@ const allowedList = ['https://mesto.frontend.akula.nomoreparties.co', 'http://me
 
 /* Настройки CORS */
 const corsOptions = {
-  origin: allowedList,
+  origin: "*",
   methods: "GET, HEAD, PUT, PATCH, POST, DELETE",
   allowedHeaders: ['Content-Type', 'Authorization'],
   preflightContinue: false,
