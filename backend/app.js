@@ -3,6 +3,7 @@ const { errors, celebrate, Joi } = require('celebrate');
 const http2 = require('http2');
 const express = require('express');
 const mongoose = require('mongoose'); //подключение БД Монго
+const cors = require('cors'); //Подключение
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
 
@@ -14,6 +15,8 @@ const auth = require('./middlewares/auth'); //подключение защит�
 const errorHandler = require('./middlewares/errorHandler'); //подключение обработчика ошибок
 
 const { PORT = 3000} = process.env;
+
+
 
 const limiter = rateLimit({
   windowMs: 20 * 60 * 1000, // за 15 минут
@@ -40,7 +43,7 @@ app.use(bodyParser.json()); // настройка парсера для приё
   };
   next();
 }); */
-
+app.use(cors()); // Подключение CORS
 app.use(requestLogger); // подключаем логгер запросов
 
 /* Добавление роутов */
