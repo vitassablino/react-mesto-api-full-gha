@@ -20,6 +20,8 @@ const limiter = rateLimit({
   max: 1000 // можно совершить максимум 100 запросов с одного IP
 });
 
+const { requestLogger, errorLogger } = require('./middlewares/logger'); // Подключение логгеров
+
 /* Адрес БД */
 const mestodb = 'mongodb://127.0.0.1:27017/mestodb';
 /* Получение подключения */
@@ -38,6 +40,8 @@ app.use(bodyParser.json()); // настройка парсера для приё
   };
   next();
 }); */
+
+app.use(requestLogger); // подключаем логгер запросов
 
 /* Добавление роутов */
 /* Роуты, не требующие авторицзации */
@@ -67,6 +71,8 @@ createUser);
 app.use(auth);
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
+
+app.use(errorLogger); //подключаем логгер ошибок
 
 
 app.all('*', (req, res) => {
