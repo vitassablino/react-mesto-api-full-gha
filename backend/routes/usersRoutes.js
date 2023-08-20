@@ -1,54 +1,38 @@
-const usersRouter = require('express').Router();
-const {getUsers, getUserById, createUser, updateUser, updateAvatar, getCurrentUser} = require('../controllers/userControllers')
+const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
+const {
+  getAllUsers,
+  getUser,
+  getUserInfo,
+  updateUserInfo,
+  updateUserAvatar,
+  logout,
+} = require('../controllers/userControllers');
 
-/* получение информации о текущем пользователе */
-usersRouter.get('/users/me',
-/* celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-  }),
-}), */
-getCurrentUser);
+router.get('/', getAllUsers);
 
-/* Получение всех пользователей */
-usersRouter.get('/users', getUsers);
+router.get('/me', getUserInfo);
 
-/* Получение пользователя по ID */
-usersRouter.get('/users/:id',
-celebrate({
+router.delete('/me', logout);
+
+router.get('/:userId', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().required().hex().min(24)
-      .max(24),
+    userId: Joi.string().required().hex().length(24),
   }),
-}),
-getUserById);
+}), getUser);
 
-/* Создание пользователя */
-//usersRouter.post('/users', createUser);
-
-/* Обновление данных пользователя */
-usersRouter.patch('/users/me',
-celebrate({
+router.patch('/me', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
-}),
-updateUser);
+}), updateUserInfo);
 
-/* Обновление аватара пользователя */
-usersRouter.patch('/users/me/avatar',
-celebrate({
+router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required()
-      .regex(/^(https?:\/\/)?([\da-z.-]+).([a-z.]{2,6})([/\w.-]*)*\/?$/),
+    avatar: Joi.string().required().regex(/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/im),
   }),
-}),
-updateAvatar);
+}), updateUserAvatar);
 
-
-
-module.exports = usersRouter;
+module.exports = router;

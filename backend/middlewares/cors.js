@@ -1,6 +1,8 @@
 const allowedList = [
   'http://localhost:3000',
   'https://localhost:3000',
+  'https://localhost:4000',
+  'http://localhost:4000',
   'http://158.160.52.136',
   'https://158.160.52.136',
   'http://mesto.frontend.akula.nomoreparties.co',
@@ -9,7 +11,7 @@ const allowedList = [
   'https://api.mesto.frontend.akula.nomoreparties.co'
 ];
 
-const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
+const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
 module.exports = (req, res, next) => {
   const { origin } = req.headers;
@@ -24,7 +26,7 @@ module.exports = (req, res, next) => {
     console.log('Предварительный запрос')
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     res.header('Access-Control-Allow-Headers', requestHeaders);
-    res.end();
+    return res.end();
   }
-  next();
+  return next();
 };

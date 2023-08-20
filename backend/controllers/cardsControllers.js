@@ -3,119 +3,81 @@ const Card = require('../models/cardScheme');
 const User = require('../models/userScheme');
 
 /*  Обработка GET запроса /cards  */
-const getCards = (req, res, next) => {
+module.exports.getAllCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => {
-      /* if (cards.length === 0) {
-        res.send({message: "Карточки не обнаружены"});
-      } */
-      res.status(http2.constants.HTTP_STATUS_OK).send(cards);
-    })
-    .catch((err) => {
-      next(err);
-    })
-}
+    .then((cards) => res.status(http2.constants.HTTP_STATUS_OK).send(cards))
+    .catch(next);
+};
 
 /*  Обработка POST запроса /cards  */
-const createCard = (req, res, next) => {
-  const {name, link} = req.body;
-  const owner = req.user._id;
-  Card.create({name, link, owner})
-    .then((card) => {
-      res.status(http2.constants.HTTP_STATUS_CREATED).send(card);
-    })
+module.exports.createCard = (req, res, next) => {
+  const { name, link } = req.body;
+  Card.create({ name, link, owner: req.user._id })
+    .res.status(http2.constants.HTTP_STATUS_CREATED).send(card)
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-      }
-    else {
-      next(err);
-    }
-    })
-}
-
-/*  /Обработка DELETE запроса /cards/:Id  */
-const deleteCard = (req, res, next) => {
-  const userID = req.user._id;
-  Card.findById(req.params.cardId)
-    .then((card) => {
-      if (!card) {
-        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: `Произошла ошибка:  карточка с указанным ID не обнаружена`});
+      if (err instanceof ValidationError) {
+        es.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
         return;
-      }
-      if (card.owner.toString() !== userID) {
-        res.status(http2.constants.HTTP_STATUS_FORBIDDEN).send({ message: `Вы не являетесь автором карточки. Удаление невозможно`});
-        return;
-      }
-      return Card.findByIdAndRemove(req.params.cardId).then(() => {res.status(http2.constants.HTTP_STATUS_OK).send(card);})
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-      res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
       } else {
         next(err);
       }
-    })
-}
+    });
+};
 
-/*  Обработка PUT запроса /cards/:cardId/likes  */
-const likeCard = (req, res, next) => {
-  const CardId = req.params.cardId;
-  User.findById(req.user._id)
-    .then((user) => {
-    Card.findByIdAndUpdate(
-      {_id: CardId},
-      {$addToSet: {likes: user}},
-      {new: true}
-    )
+
+
+/*  Обработка DELETE запроса /cards/:Id  */
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .orFail()
     .then((card) => {
-      if (!card) {
+      Card.deleteOne({ _id: card._id, owner: req.user._id })
+        .then((result) => {
+          if (result.deletedCount === 0) {
+            res.status(http2.constants.HTTP_STATUS_FORBIDDEN).send({ message: `Вы не являетесь автором карточки. Удаление невозможно`});
+            return;
+          }
+          res.send({ message: 'Пост удалён' });
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
         res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message: `Произошла ошибка: карточка с указанным ID не обнаружена`})
         return;
-      }
-      res.status(http2.constants.HTTP_STATUS_OK).send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      } else if (err instanceof CastError) {
         res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
+        return;
       } else {
         next(err);
       }
-    })
-    })
-}
+    });
+};
 
-/*  Обработка DELETE запроса /cards/:cardId/likes  */
-const unlikeCard = (req, res, next) => {
-  const CardId = req.params.cardId;
-  User.findById(req.user._id)
-    .then((user) => {
-      Card.findByIdAndUpdate(
-        {_id: CardId},
-        {$pull: {likes: user.id}},
-        {new: true}
-      )
-      .then((card) => {
-        if (!card) {
-          res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message: `Произошла ошибка: карточка с указанным ID не обнаружена`})
-          return;
-        }
-        res.status(http2.constants.HTTP_STATUS_OK).send(card);
-      })
-      .catch((err) => {
-        if (err.name === 'ValidationError' || err.name === 'CastError') {
-          res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-        } else {
-          next(err);
-        }
-      })
-    })
-}
+const cardLikesUpdate = (req, res, updateData, next) => {
+  Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
+    .orFail()
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message: `Произошла ошибка: карточка с указанным ID не обнаружена`})
+        return;
+      } else if (err instanceof CastError) {
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
+        return;
+      } else {
+        next(err);
+      }
+    });
+};
 
-module.exports = {
-  getCards,
-  createCard,
-  deleteCard,
-  likeCard,
-  unlikeCard
-}
+/*  Обработка PUT запроса /cards/:cardId/likes  */
+module.exports.likeCard = (req, res, next) => {
+  const updateData = { $addToSet: { likes: req.user._id } };
+  cardLikesUpdate(req, res, updateData, next);
+};
+
+module.exports.dislikeCard = (req, res, next) => {
+  const updateData = { $pull: { likes: req.user._id } };
+  cardLikesUpdate(req, res, updateData, next);
+};
