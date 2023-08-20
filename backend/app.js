@@ -30,9 +30,9 @@ const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
 /* Получение подключения */
 const db = mongoose.connection;
 
-app.use(bodyParser.json()); // настройка парсера для приёма JSON
+app.use(express.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
-
+app.use(cors);
 
 /* Подключение к серверу Mongo */
 mongoose.connect(mestodb/* , {useNewUrlParser: true, useUnifiedTopology: true } */);
@@ -87,7 +87,7 @@ app.all('*', (req, res) => {
 app.use(errors()); // обработчик ошибок celebrate
 app.use(errorHandler);
 app.use(errorLogger); //подключаем логгер ошибок
-app.use(cors);
+
 app.listen(PORT, () => {
   console.log(`Прослушивание порта ${PORT}`)
 });
