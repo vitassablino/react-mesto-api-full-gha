@@ -87,7 +87,7 @@ celebrate({
 createUser);
 
 /* Роуты, требующие авторицзации */
-app.use(auth);
+//app.use(auth);
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
 
