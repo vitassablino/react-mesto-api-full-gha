@@ -3,27 +3,23 @@ const http2 = require('http2');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
-  const bearer = 'Bearer ';
+  const token = req.cookies.jwt;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-
+  if (!token) {
     res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: "Для доступа необходимо авторизироваться"});
-    console.log('В заголовкке authorization нет ключа или же нет такого заголовка')
+    console.log('В запросе отсутствует токен')
     return;
   }
 
   let payload;
-  const token = authorization.replace(bearer, '');
 
   try {
-    comsole.log(`Окружение - ${NODE_ENV}`);
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'token-key');
   } catch (err) {
-    res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: "Для доступа необходимо авторизироваться!"});
+    res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: "Для доступа необходимо авторизироваться"});
+    console.log('Токен не прошёл верификацию')
     return;
   }
-
   req.user = payload;
-  next();
+  return next();
 };

@@ -8,7 +8,7 @@ const cors = require('./middlewares/cors'); //Подключение мидлв�
 //const cors = require('cors');
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
-//const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 const userRoutes = require('./routes/usersRoutes'); //подключение роутов пользователя
 const cardsRoutes = require('./routes/cardRoutes'); //добавление роутов карточек
 
@@ -29,8 +29,9 @@ const { requestLogger, errorLogger } = require('./middlewares/logger'); // По�
 
 
 app.use(bodyParser.json()); // настройка парсера для приёма JSON
-//app.use(cookieParser());
+app.use(cookieParser());
 app.use(cors);
+app.use(helmet());
 /* const corsOptions = {
   origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -72,6 +73,7 @@ celebrate({
   }),
 }),
 login);
+
 app.use('/signup',
 celebrate({
   body: Joi.object().keys({
@@ -87,7 +89,7 @@ celebrate({
 createUser);
 
 /* Роуты, требующие авторицзации */
-//app.use(auth);
+app.use(auth);
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
 
