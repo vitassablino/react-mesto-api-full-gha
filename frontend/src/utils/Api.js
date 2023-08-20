@@ -15,8 +15,10 @@ class Api {
   getUserData() {
     return fetch(this._url + "/users/me", {
       method: "GET",
-      credentials: 'include',
-      headers: this._headers,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      }
     }).then(this.#checkResponse);
   }
 
@@ -24,8 +26,11 @@ class Api {
     //console.log(data);
     return fetch(this._url + "/users/me", {
       method: "PATCH",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({
         name: data.name,
         about: data.about,
@@ -37,8 +42,11 @@ class Api {
   getInitialCards() {
     return fetch(this._url + "/cards", {
       method: "GET",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
     }).then(this.#checkResponse);
   }
 
@@ -51,8 +59,11 @@ class Api {
   like(id) {
     return fetch(this._url + `/cards/${id}/likes`, {
       method: "PUT",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
     }).then(this.#checkResponse);
   }
 
@@ -60,8 +71,11 @@ class Api {
   notLike(id) {
     return fetch(this._url + `/cards/${id}/likes`, {
       method: "DELETE",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
     }).then(this.#checkResponse);
   }
 
@@ -77,8 +91,11 @@ class Api {
    // console.log(items);
     return fetch(this._url + "/cards", {
       method: "POST",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({
         name: items.cardName,
         link: items.cardLink,
@@ -89,16 +106,22 @@ class Api {
   delete(id) {
     return fetch(this._url + `/cards/${id}`, {
       method: "DELETE",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
     }).then(this.#checkResponse);
   }
 
   editAvatar(items) {
     return fetch(this._url + "/users/me/avatar", {
       method: "PATCH",
-      credentials: 'include',
-      headers: this._headers,
+      //credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({
         avatar: items.avatar,
       }),
@@ -115,11 +138,7 @@ const apiData = {
 };
 
 const apiYandexCloud = {
-  url: "http://mesto.frontend.akula.nomoreparties.co",
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization' : `Bearer ${localStorage.getItem('jwt')}`
-  },
+  url: "http://api.mesto.frontend.akula.nomoreparties.co",
 }
 
 const api = new Api(apiYandexCloud);

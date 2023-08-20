@@ -1,5 +1,5 @@
 const authSetting = {
-  url: "http://mesto.frontend.akula.nomoreparties.co",
+  url: "https://api.mesto.frontend.akula.nomoreparties.co"
 };
 
 class Auth {
@@ -15,19 +15,17 @@ class Auth {
   }
 
   getRegistrationUser(data) {
- //console.log(password, email);
+ console.log("метод getRegistrationUser запустился");
 
     return fetch(`${this._url}/signup`, {
       method: "POST",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         password: data.password,
         email: data.email,
       }),
-     /*  mode: 'no-cors', */
     }).then(this.#checkResponse);
   }
 
@@ -38,23 +36,31 @@ class Auth {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: 'include',
+      //credentials: 'include',
       body: JSON.stringify({
         password: data.password,
         email: data.email,
       }),
     }).then(this.#checkResponse)
     .then((data) => {
-      localStorage.setItem('userId', data._id)
-      return data;
+      if (data.token) {
+        const { token } = data;
+        localStorage.setItem('jwt', token);
+        return token;
+      };
     });
   }
 
-  getContent() {
+  getContent(token) {
     return fetch(`${this._url}/users/me`, {
       method: "GET",
-      credentials: 'include',  
-    }).then(this.#checkResponse);
+      //credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(this.#checkResponse)
+    .then(data => data);
   };
   
 /*   checkValidityUser(jwt) {

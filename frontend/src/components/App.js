@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { Navigate, useNavigate, Route, Routes } from "react-router-dom";
 import Login from "./Login";
@@ -38,22 +38,25 @@ function App() {
     setIsInfoTooltipOpen,
   ];
   const [cards, setCards] = useState([]);
-  const [checkToken, setCheckToken] = useState(false);
 
 
   /* Проверка jwt и установка соотв.-их стейтов */
-  useEffect(() => {
-    if (localStorage.getItem("jwt")) {
-      setCheckToken(true);
-      auth.getContent()
+  const checkToken = useCallback(() => {
+    const jwt = localStorage.getItem("jwt")
+    if (jwt) {
+      auth.getContent(jwt)
       .then((res) => {
+        setUserEmail(res.email);
         setLoggedIn(true);
-        setUserEmail(res.data.email);
+        navigate('/', { replace: true });
       })
-/*         .then(() => navigate("/", { replace: true })) */
         .catch((err) => console.log(err));
     }
   }, [navigate]);
+
+  useEffect(() => {
+    checkToken();
+  }, [checkToken]);
 
   /* Функция выхода */
   function handleSignOut() {
@@ -105,7 +108,10 @@ function App() {
 
   /* Функция обновления информации о пользователе */
   function handleUpdateUser(data) {
-    setIsLoading(true);
+    if (data.name === currentUser.name && data.about === currentUser.about) {
+      closeAllPopups();
+    } else {
+      setIsLoading(true);
     api
       .setUserData(data)
       .then((userData) => {
@@ -114,9 +120,9 @@ function App() {
       })
       .catch((err) => console.log(err))
       .finally(() => setIsLoading(false));
-  }
+  }}
 
-  /* Фнункция добавления места аватарки */
+  /* Фнункция добавления места */
   function handleAddCardSubmit(cardData) {
     setIsLoading(true);
     api
@@ -151,6 +157,7 @@ function App() {
 
   /*Функция удаления карточки */
   function handleCardDelete(cardId) {
+    
     console.log(cardId);
     setCardToDelete(cardId);
   }
@@ -169,13 +176,15 @@ function App() {
   }
 
   /* Функция регистрации */
-  function handleRegistrationUser(userData) {
+  function handleRegistrationUser(data) {
+    console.log(`Данные на входе handleRegistrationUser: ${JSON.stringify(data)}`)
     auth
-      .getRegistrationUser(userData)
+      .getRegistrationUser(data)
       .then((data) => {
-        navigate("/signin");
-        setUserEmail(data.email);
+        if (data) {
         setIsInfoTooltipOpen({ isOpen: true, status: true });
+        navigate("/signin", { replace: false });
+        }        
       })
       .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
   }
@@ -184,14 +193,11 @@ function App() {
   function handleAuthorizationUser(userData) {
     auth
       .getAuthorizationUser(userData)
-      .then((data) => {
-        if (data.token) {
-          localStorage.setItem("jwt", data.token);
+      .then((jwt) => {
+        if (jwt) {
           setLoggedIn(true);
-          setUserEmail(userData.email);
-          setCurrentUser(data);
           navigate("/", { replace: true });
-        }
+        }              
       })
       .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
   }
@@ -205,6 +211,7 @@ function App() {
             onSignOut={handleSignOut}
             isOpenBurger={isOpenBurger}
             onToggleBurger={handleToggleBurger}
+            
           />
 
           <Routes>

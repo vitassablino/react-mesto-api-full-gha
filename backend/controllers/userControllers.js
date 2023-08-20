@@ -72,7 +72,7 @@ const getUserById = (req, res, next) => {
 
 
 /* Обработка PATCH запроса /users/me */
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const id = req.user._id;
   const newName = req.body.name;
   const newAbout = req.body.about;
@@ -114,23 +114,18 @@ const updateAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password, res)
-    .then((user) => {
+  return User.findUserByCredentials(email, password)
+    .then(({_id: userId}) => {
 /*       if (!user) {
         res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({message: 'Неверный логин или пароль'})
         return;
       } */
+
       const token = jwt.sign(
-        { _id: user._id },
+        {userId},
         NODE_ENV === 'production' ? JWT_SECRET : 'token-key',
-        { expiresIn: '7d' },
-      );
-      res.status(http2.constants.HTTP_STATUS_OK).send('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: 'None',
-        secure: true,
-      }).send(user(toJSON()))
+        { expiresIn: '7d' });
+      res.status(http2.constants.HTTP_STATUS_OK).send({token})
     })
     .catch((err) => {
       next(err);
