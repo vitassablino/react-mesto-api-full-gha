@@ -1,7 +1,6 @@
 const usersRouter = require('express').Router();
 const {getUsers, getUserById, createUser, updateUser, updateAvatar, getCurrentUser} = require('../controllers/userControllers')
 const { celebrate, Joi } = require('celebrate');
-const auth = require('../middlewares/auth');
 
 
 /* получение информации о текущем пользователе */
@@ -25,7 +24,7 @@ celebrate({
       .max(24),
   }),
 }),
-auth, getUserById);
+getUserById);
 
 /* Создание пользователя */
 //usersRouter.post('/users', createUser);

@@ -1,5 +1,5 @@
 const authSetting = {
-  url: "https://mesto.frontend.akula.nomoreparties.co",
+  url: "http://mesto.frontend.akula.nomoreparties.co",
 };
 
 class Auth {
@@ -14,7 +14,7 @@ class Auth {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
-  getRegistrationUser({ password, email }) {
+  getRegistrationUser(data) {
  //console.log(password, email);
 
     return fetch(`${this._url}/signup`, {
@@ -24,8 +24,8 @@ class Auth {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        password: password,
-        email: email,
+        password: data.password,
+        email: data.email,
       }),
      /*  mode: 'no-cors', */
     }).then(this.#checkResponse);
@@ -45,7 +45,7 @@ class Auth {
       }),
     }).then(this.#checkResponse)
     .then((data) => {
-      localStorage.setItem('jwt', data.token)
+      localStorage.setItem('userId', data._id)
       return data;
     });
   }

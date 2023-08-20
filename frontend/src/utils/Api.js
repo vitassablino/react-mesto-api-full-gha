@@ -21,7 +21,7 @@ class Api {
   }
 
   setUserData(data) {
-    console.log(data);
+    //console.log(data);
     return fetch(this._url + "/users/me", {
       method: "PATCH",
       credentials: 'include',
@@ -74,7 +74,7 @@ class Api {
   }
 
   addNewCard(items) {
-    console.log(items);
+   // console.log(items);
     return fetch(this._url + "/cards", {
       method: "POST",
       credentials: 'include',
@@ -107,7 +107,7 @@ class Api {
 }
 
 const apiData = {
-  url: "https://mesto.nomoreparties.co/v1/cohort-59",
+  url: "http://mesto.nomoreparties.co/v1/cohort-59",
   headers: {
     authorization: "44c0c0c8-2249-4c66-a825-6f516eb82eac",
     "Content-Type": "application/json",
@@ -115,9 +115,10 @@ const apiData = {
 };
 
 const apiYandexCloud = {
-  url: "https://mesto.frontend.akula.nomoreparties.co",
+  url: "http://mesto.frontend.akula.nomoreparties.co",
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
+    'Authorization' : `Bearer ${localStorage.getItem('jwt')}`
   },
 }
 

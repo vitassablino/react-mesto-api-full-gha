@@ -4,6 +4,38 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+/* Обработка POST запроса /users */
+const createUser = (req, res, next) => {
+  bcrypt.hash(req.body.password, 10)
+  .then((hash) => User.create({
+    email: req.body.email,
+    password: hash,
+    name: req.body.name,
+    about: req.body.about,
+    avatar: req.body.avatar,
+  }))
+    .then((user) => {
+      res.status(http2.constants.HTTP_STATUS_OK).send({
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        _id: user._id,
+        email: user.email,
+      });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
+        return;
+      }
+      if (err.code === 11000) {
+        res.status(http2.constants.HTTP_STATUS_CONFLICT).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
+        return;
+      }
+      next(err);
+    })
+}
+
 /* Обработка GET запроса /users */
 const getUsers = (req, res) => {
   User.find({})
@@ -37,37 +69,7 @@ const getUserById = (req, res, next) => {
   })
 }
 
-/* Обработка POST запроса /users */
-const createUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
-  .then((hash) => User.create({
-    email: req.body.email,
-    password: hash,
-    name: req.body.name,
-    about: req.body.about,
-    avatar: req.body.avatar,
-  }))
-    .then((user) => {
-      res.status(http2.constants.HTTP_STATUS_OK).send({
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        _id: user._id,
-        email: user.email,
-      });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-        return;
-      }
-      if (err.code === 11000) {
-        res.status(http2.constants.HTTP_STATUS_CONFLICT).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-        return;
-      }
-      next(err);
-    })
-}
+
 
 /* Обработка PATCH запроса /users/me */
 const updateUser = (req, res) => {
