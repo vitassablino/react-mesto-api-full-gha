@@ -134,6 +134,7 @@ const login = (req, res, next) => {
 
 /* получение информации о текущем порльзователе */
 const getCurrentUser = (req, res, next) => {
+  console.log(`Ваш ID - ${req.user._id}`)
   const id = req.user._id;
 
   User.findById(id)
