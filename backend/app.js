@@ -34,7 +34,11 @@ const db = mongoose.connection;
 app.use(express.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
 //app.use(cors);
-app.use(cors());
+const corsOptions = {
+  origin: true,
+  credentials: true,
+};
+app.use(cors(corsOptions));
 
 /* Подключение к серверу Mongo */
 mongoose.connect(mestodb/* , {useNewUrlParser: true, useUnifiedTopology: true } */);
