@@ -5,14 +5,15 @@ const allowedList = [
   'https://158.160.52.136',
   'http://mesto.frontend.akula.nomoreparties.co',
   'https://mesto.frontend.akula.nomoreparties.co'
+
 ]
 
 
 
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
   const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
   const { origin } = req.headers;
-  const { method } = req;
+  const { method } = req; // Сохраняем тип запроса (HTTP-метод) в соответствующую переменную
   console.log(method);
   const requestHeaders = req.headers['access-control-request-headers']; // сохраняем список заголовков исходного запроса
   if (allowedList.includes(origin)) {

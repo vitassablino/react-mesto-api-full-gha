@@ -1,3 +1,4 @@
+require('dotenv').config();
 const rateLimit = require('express-rate-limit');
 const { errors, celebrate, Joi } = require('celebrate');
 const http2 = require('http2');
@@ -13,7 +14,6 @@ const cardsRoutes = require('./routes/cardRoutes'); //добавление ро�
 const { createUser, login } = require('./controllers/userControllers'); //подключение обработчиков авторизации и регистрации
 const auth = require('./middlewares/auth'); //подключение защиты роутов авторизацией
 const errorHandler = require('./middlewares/errorHandler'); //подключение обработчика ошибок
-require('dotenv').config();
 const { PORT = 3000} = process.env;
 
 
@@ -29,15 +29,16 @@ const { requestLogger, errorLogger } = require('./middlewares/logger'); // По�
 const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
 /* Получение подключения */
 const db = mongoose.connection;
+
+app.use(bodyParser.json()); // настройка парсера для приёма JSON
+app.use(cookieParser());
+app.use(cors);
+
 /* Подключение к серверу Mongo */
 mongoose.connect(mestodb, {useNewUrlParser: true, useUnifiedTopology: true });
 /* Подключение к событию ошибки */
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 app.use(limiter);
-
-app.use(bodyParser.json()); // настройка парсера для приёма JSON
-app.use(cookieParser());
-app.use(cors);
 
 /* Мидлвара добавления user в каждый запрос */
 /* app.use((req, res, next) => {
