@@ -6,18 +6,21 @@ const http2 = require('http2');
 const userScheme = new mongoose.Schema({
   name: {
     type: String,
+    required: false,
     minlength: 2,
     maxlength: 30,
     default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
+    required: false,
     minlength: 2,
     maxlength: 30,
     default: 'Исследователь',
   },
   avatar: {
     type: String,
+    required: false,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator: (correct) => validator.isURL(correct),
@@ -55,7 +58,7 @@ userScheme.statics.findUserByCredentials = function (email, password, res) {
         res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: 'Неверный логин или пароль'})
       }
 
-      return bcrypt.compare(password, user.password)
+      return bcrypt.compare(password, user.password, res)
         .then((matched) => {
           if (!matched) {
             res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: 'Неверный логин или пароль'})
