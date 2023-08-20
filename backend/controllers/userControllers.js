@@ -114,7 +114,7 @@ const updateAvatar = (req, res, next) => {
 const login = (req, res, next) => {
   console.log('Происходит авторизация (userController)')
   const { email, password } = req.body;
-  console.log(`Данные для в входа - ${password} и ${email}`)
+  console.log(`Данные для в входа - ${password} и ${email} (userController)`)
   return User.findUserByCredentials(email, password)
     .then(({_id: userId}) => {
 /*       if (!user) {
