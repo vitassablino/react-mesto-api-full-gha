@@ -2,6 +2,7 @@ const http2 = require('http2');
 const User = require('../models/userScheme');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 /* Обработка GET запроса /users */
 const getUsers = (req, res) => {
@@ -119,11 +120,15 @@ const login = (req, res, next) => {
       } */
       const token = jwt.sign(
         { _id: user._id },
-        'token-key',
+        NODE_ENV === 'production' ? JWT_SECRET : 'token-key',
         { expiresIn: '7d' },
       );
-
-      res.send({ token });
+      res.status(http2.constants.HTTP_STATUS_OK).send('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: 'None',
+        secure: true,
+      }).send(user(toJSON()))
     })
     .catch((err) => {
       next(err);

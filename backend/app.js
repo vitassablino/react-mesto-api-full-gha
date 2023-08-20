@@ -1,11 +1,11 @@
 require('dotenv').config();
+const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { errors, celebrate, Joi } = require('celebrate');
 const http2 = require('http2');
-const express = require('express');
 const mongoose = require('mongoose'); //подключение БД Монго
-//const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
-const cors = require('cors');
+const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
+//const cors = require('cors');
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
 const cookieParser = require('cookie-parser')
@@ -26,15 +26,12 @@ const limiter = rateLimit({
 
 const { requestLogger, errorLogger } = require('./middlewares/logger'); // Подключение логгеров
 
-/* Адрес БД */
-const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
-/* Получение подключения */
-const db = mongoose.connection;
 
-app.use(express.json()); // настройка парсера для приёма JSON
+
+app.use(bodyParser.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
-//app.use(cors);
-const corsOptions = {
+app.use(cors);
+/* const corsOptions = {
   origin: "*",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: ['Content-Type', 'Authorization', 'OPTIONS'],
@@ -42,6 +39,12 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
+ */
+
+/* Адрес БД */
+const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
+/* Получение подключения */
+const db = mongoose.connection;
 
 /* Подключение к серверу Mongo */
 mongoose.connect(mestodb/* , {useNewUrlParser: true, useUnifiedTopology: true } */);
@@ -65,7 +68,7 @@ app.use('/signin',
 celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required().min(8).max(30),
+    password: Joi.string().required().min(4).max(30),
   }),
 }),
 login);
