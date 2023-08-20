@@ -120,12 +120,15 @@ const login = (req, res, next) => {
         res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({message: 'Неверный логин или пароль'})
         return;
       } */
-
-      const token = jwt.sign(
+      if (userId) {
+        console.log("Пользователь с указанными данными найден")
+        const token = jwt.sign(
         {userId},
         NODE_ENV === 'production' ? JWT_SECRET : 'token-key',
         { expiresIn: '7d' });
-      res.status(http2.constants.HTTP_STATUS_OK).send({token})
+        console.log("Токен сгенерирован")
+        res.status(http2.constants.HTTP_STATUS_OK).send({token})
+      }
     })
     .catch((err) => {
       next(err);
