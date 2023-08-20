@@ -32,10 +32,10 @@ const db = mongoose.connection;
 
 app.use(bodyParser.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
-app.use(cors);
+
 
 /* Подключение к серверу Mongo */
-mongoose.connect(mestodb, {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(mestodb/* , {useNewUrlParser: true, useUnifiedTopology: true } */);
 /* Подключение к событию ошибки */
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 app.use(limiter);
@@ -79,9 +79,6 @@ app.use(auth);
 app.use('/', userRoutes);
 app.use('/', cardsRoutes);
 
-app.use(errorLogger); //подключаем логгер ошибок
-
-
 app.all('*', (req, res) => {
  res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message: "Страница не найдена"})
 });
@@ -89,8 +86,8 @@ app.all('*', (req, res) => {
 /* обработчик ошибок */
 app.use(errors()); // обработчик ошибок celebrate
 app.use(errorHandler);
-
-
+app.use(errorLogger); //подключаем логгер ошибок
+app.use(cors);
 app.listen(PORT, () => {
   console.log(`Прослушивание порта ${PORT}`)
 });
