@@ -11,8 +11,9 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
 const { PORT = 3000} = process.env;
 const app = express();
-const mestodb = 'mongodb://127.0.0.1:27017/mestodb1';
+const mestodb = 'mongodb://127.0.0.1:27017/mestodb';
 const db = mongoose.connection;
+mongoose.connect(mestodb)
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 
 app.use(express.json());
