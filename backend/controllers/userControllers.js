@@ -112,8 +112,9 @@ const updateAvatar = (req, res, next) => {
 
 /* Проверка введённых пояты и пароля */
 const login = (req, res, next) => {
+  console.log('Происходит авторизация (userController)')
   const { email, password } = req.body;
-
+  console.log(`Данные для в входа - ${password} и ${email}`)
   return User.findUserByCredentials(email, password)
     .then(({_id: userId}) => {
 /*       if (!user) {
