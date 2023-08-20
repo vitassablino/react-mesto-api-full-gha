@@ -4,7 +4,8 @@ const { errors, celebrate, Joi } = require('celebrate');
 const http2 = require('http2');
 const express = require('express');
 const mongoose = require('mongoose'); //подключение БД Монго
-const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
+//const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
+const cors = require('cors');
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
 const cookieParser = require('cookie-parser')
@@ -32,7 +33,8 @@ const db = mongoose.connection;
 
 app.use(express.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
-app.use(cors);
+//app.use(cors);
+app.use(cors());
 
 /* Подключение к серверу Mongo */
 mongoose.connect(mestodb/* , {useNewUrlParser: true, useUnifiedTopology: true } */);
