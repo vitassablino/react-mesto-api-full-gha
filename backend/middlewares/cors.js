@@ -12,7 +12,8 @@ const allowedList = [
 module.exports = (req, res, next) => {
   const DEFAULT_ALLOWED_METHODS = "GET,HEAD,PUT,PATCH,POST,DELETE";
   const { origin } = req.headers;
-  const { method } = req;
+  const { method } = req.method;
+  console.log(method);
   const requestHeaders = req.headers['access-control-request-headers'];
   if (allowedList.includes(origin)) {
     console.log('Запрос с разрешённого источника')
