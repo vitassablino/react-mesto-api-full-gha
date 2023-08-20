@@ -1,5 +1,5 @@
 const authSetting = {
-  url: "https://api.mesto.frontend.akula.nomoreparties.co",
+  url: "https://mesto.frontend.akula.nomoreparties.co",
 };
 
 class Auth {
@@ -27,6 +27,7 @@ class Auth {
         password: password,
         email: email,
       }),
+     /*  mode: 'no-cors', */
     }).then(this.#checkResponse);
   }
 

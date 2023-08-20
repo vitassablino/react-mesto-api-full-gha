@@ -115,7 +115,7 @@ const apiData = {
 };
 
 const apiYandexCloud = {
-  url: "https://api.mesto.frontend.akula.nomoreparties.co",
+  url: "https://mesto.frontend.akula.nomoreparties.co",
   headers: {
     "Content-Type": "application/json",
   },
