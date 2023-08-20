@@ -49,13 +49,38 @@ const userScheme = new mongoose.Schema({
       message: (props) => `${props.value} не является надежным паролем`,
     },
   }
-});
+},
 
-userScheme.statics.findUserByCredentials = function (email, password, res) {
+{
+  versionKey: false,
+  statics: {
+    findUserByCredentials(email, password) {
+      return this
+        .findOne({ email })
+        .select('+password')
+        .then((user) => {
+          if (user) {
+            return bcrypt.compare(password, user.password)
+              .then((matched) => {
+                if (matched) return user;
+
+                return Promise.reject();
+              });
+          }
+
+          return Promise.reject();
+        });
+    },
+  },
+},
+);
+
+
+/* userScheme.statics.findUserByCredentials = function (email, password, res) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        res.status(/* http2.constants.HTTP_STATUS_UNAUTHORIZED */'401').send({message: 'Неверный логин или пароль'})
+        res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: 'Неверный логин или пароль'})
       }
 
       return bcrypt.compare(password, user.password, res)
@@ -67,6 +92,8 @@ userScheme.statics.findUserByCredentials = function (email, password, res) {
           return user;
         });
     });
-};
+}; */
+
+
 
 module.exports = mongoose.model('user', userScheme);
