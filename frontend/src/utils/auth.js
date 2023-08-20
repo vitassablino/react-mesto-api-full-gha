@@ -1,14 +1,10 @@
 const authSetting = {
   url: "https://api.mesto.frontend.akula.nomoreparties.co",
-  headers: {
-    "Content-Type": "application/json",
-  },
 };
 
 class Auth {
   constructor(options) {
     this._url = options.url;
-    this._headers = options.headers;
   }
 
   #checkResponse(res) {
@@ -23,8 +19,10 @@ class Auth {
 
     return fetch(`${this._url}/signup`, {
       method: "POST",
-      headers: this._headers,
-      credentials: 'include',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         password: password,
         email: email,
@@ -36,7 +34,9 @@ class Auth {
     //console.log(data);
     return fetch(`${this._url}/signin`, {
       method: "POST",
-      headers: this._headers,
+      headers: {
+        "Content-Type": "application/json",
+      },
       credentials: 'include',
       body: JSON.stringify({
         password: data.password,

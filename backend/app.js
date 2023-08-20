@@ -35,7 +35,10 @@ app.use(express.json()); // настройка парсера для приём�
 app.use(cookieParser());
 //app.use(cors);
 const corsOptions = {
-  origin: true,
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ['Content-Type', 'Authorization', 'OPTIONS'],
+
   credentials: true,
 };
 app.use(cors(corsOptions));
