@@ -13,7 +13,7 @@ const cardsRoutes = require('./routes/cardRoutes'); //добавление ро�
 const { createUser, login } = require('./controllers/userControllers'); //подключение обработчиков авторизации и регистрации
 const auth = require('./middlewares/auth'); //подключение защиты роутов авторизацией
 const errorHandler = require('./middlewares/errorHandler'); //подключение обработчика ошибок
-
+require('dotenv').config();
 const { PORT = 3000} = process.env;
 
 
@@ -34,9 +34,10 @@ mongoose.connect(mestodb, {useNewUrlParser: true, useUnifiedTopology: true });
 /* Подключение к событию ошибки */
 db.on('error', console.error.bind(console, 'ошибка подключения к mestoDB'))
 app.use(limiter);
-app.use(cors);
+
 app.use(bodyParser.json()); // настройка парсера для приёма JSON
 app.use(cookieParser());
+app.use(cors);
 
 /* Мидлвара добавления user в каждый запрос */
 /* app.use((req, res, next) => {
