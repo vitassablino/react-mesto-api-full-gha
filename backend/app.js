@@ -6,7 +6,7 @@ const mongoose = require('mongoose'); //подключение БД Монго
 const cors = require('./middlewares/cors'); //Подключение мидлвары CORS
 const app = express(); //создание точки входа
 const bodyParser = require('body-parser');  //подключение парсера
-
+const cookieParser = require('cookie-parser')
 const userRoutes = require('./routes/usersRoutes'); //подключение роутов пользователя
 const cardsRoutes = require('./routes/cardRoutes'); //добавление роутов карточек
 
