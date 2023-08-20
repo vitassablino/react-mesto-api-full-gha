@@ -49,34 +49,9 @@ const userScheme = new mongoose.Schema({
       message: (props) => `${props.value} не является надежным паролем`,
     },
   }
-},
+});
 
-{
-  versionKey: false,
-  statics: {
-    findUserByCredentials(email, password) {
-      return this
-        .findOne({ email })
-        .select('+password')
-        .then((user) => {
-          if (user) {
-            return bcrypt.compare(password, user.password)
-              .then((matched) => {
-                if (matched) return user;
-
-                return Promise.reject();
-              });
-          }
-
-          return Promise.reject();
-        });
-    },
-  },
-},
-);
-
-
-/* userScheme.statics.findUserByCredentials = function (email, password, res) {
+userScheme.statics.findUserByCredentials = function (email, password, res) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
@@ -92,8 +67,6 @@ const userScheme = new mongoose.Schema({
           return user;
         });
     });
-}; */
-
-
+};
 
 module.exports = mongoose.model('user', userScheme);

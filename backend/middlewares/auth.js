@@ -7,7 +7,9 @@ module.exports = (req, res, next) => {
   const bearer = 'Bearer ';
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
+
     res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: "Для доступа необходимо авторизироваться"});
+    console.log('В заголовкке authorization нет ключа или же нет такого заголовка')
     return;
   }
 
@@ -15,7 +17,8 @@ module.exports = (req, res, next) => {
   const token = authorization.replace(bearer, '');
 
   try {
-    payload = jwt.verify(userToken, NODE_ENV === 'production' ? JWT_SECRET : 'token-key');
+    comsole.log(`Окружение - ${NODE_ENV}`);
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'token-key');
   } catch (err) {
     res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({message: "Для доступа необходимо авторизироваться!"});
     return;
