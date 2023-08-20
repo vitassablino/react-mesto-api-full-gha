@@ -23,10 +23,8 @@ class Auth {
 
     return fetch(`${this._url}/signup`, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      headers: this._headers,
+      credentials: 'include',
       body: JSON.stringify({
         password: password,
         email: email,
