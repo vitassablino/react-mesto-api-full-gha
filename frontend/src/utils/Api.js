@@ -1,145 +1,71 @@
-class Api {
-  constructor(data) {
-    this._url = data.url;
-    this._headers = data.headers;
-  }
+const BASE_URL = "https://api.mesto.frontend.akula.nomoreparties.co"
 
-  #checkResponse(res) {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status} (api)`);
+/* Запрос серверу */
+function makeRequest(url, method, body) {
+  const headers = { "Content-Type": "application/json" };
+  const config = { method, headers, credentials: "include" };
+  if (body !== undefined) {
+    config.body = JSON.stringify(body);
   }
-
-  /* Получение стартовых данных о профиле */
-  getUserData() {
-    return fetch(this._url + "/users/me", {
-      method: "GET",
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      }
-    }).then(this.#checkResponse);
-  }
-
-  setUserData(data) {
-    //console.log(data);
-    return fetch(this._url + "/users/me", {
-      method: "PATCH",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: data.name,
-        about: data.about,
-      }),
-    }).then(this.#checkResponse);
-  }
-
-  /* Получение стартовых каточек */
-  getInitialCards() {
-    return fetch(this._url + "/cards", {
-      method: "GET",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-    }).then(this.#checkResponse);
-  }
-
-  /* Получение данные */
-  getData() {
-    return Promise.all([this.getInitialCards(), this.getUserData()]);
-  }
-
-  /*установка лайка*/
-  like(id) {
-    return fetch(this._url + `/cards/${id}/likes`, {
-      method: "PUT",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-    }).then(this.#checkResponse);
-  }
-
-  /* снятие лайка */
-  notLike(id) {
-    return fetch(this._url + `/cards/${id}/likes`, {
-      method: "DELETE",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-    }).then(this.#checkResponse);
-  }
-
-  changeLike(id, isLiked) {
-    if (isLiked) {
-      return this.notLike(id);
-    } else {
-      return this.like(id);
-    }
-  }
-
-  addNewCard(items) {
-   // console.log(items);
-    return fetch(this._url + "/cards", {
-      method: "POST",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: items.cardName,
-        link: items.cardLink,
-      }),
-    }).then(this.#checkResponse);
-  }
-
-  delete(id) {
-    return fetch(this._url + `/cards/${id}`, {
-      method: "DELETE",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-    }).then(this.#checkResponse);
-  }
-
-  editAvatar(items) {
-    return fetch(this._url + "/users/me/avatar", {
-      method: "PATCH",
-      //credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        avatar: items.avatar,
-      }),
-    }).then(this.#checkResponse);
-  }
+  return fetch(`${BASE_URL}${url}`, config).then((res) => {
+    return res.ok
+      ? res.json()
+      : Promise.reject(`Ошибка: ${res.status} ${res.statusText}`);
+  });
 }
 
-const apiData = {
-  url: "http://mesto.nomoreparties.co/v1/cohort-59",
-  headers: {
-    authorization: "44c0c0c8-2249-4c66-a825-6f516eb82eac",
-    "Content-Type": "application/json",
-  },
-};
-
-const apiYandexCloud = {
-  url: "https://api.mesto.frontend.akula.nomoreparties.co",
+/* Регистрация пользователя */
+export function register({ password, email }) {
+  return makeRequest("/signup", "POST", { password, email });
 }
 
-const api = new Api(apiYandexCloud);
-export default api;
+/* Авторизация пользователя */
+export function authorize({ password, email }) {
+  return makeRequest("/signin", "POST", { password, email });
+}
+
+/* Выход из учётной записи */
+export function logout() {
+  return makeRequest("/users/me", "DELETE");
+}
+ /* Получение данных пользователя с сервера */
+ export function getContent() {
+  return makeRequest("/users/me", "GET");
+}
+
+ /* Получение ифнормации о пользователе с сервера */
+ export function getUserInfo() {
+  return makeRequest("/users/me", "GET");
+}
+
+/* Отправить информацию о пользователе на сервер */
+export function setUserInfo({ name, about }) {
+  return makeRequest("/users/me", "PATCH", { name, about });
+}
+
+/* Отправить данные об аватарке на сервер */
+export function setUserAvatar({ avatar }) {
+  return makeRequest("/users/me/avatar", "PATCH", { avatar });
+}
+
+/* Получение стартовых карточек */
+export function getInitialCards() {
+  return makeRequest("/cards", "GET");
+}
+
+/* Отпрвить данные о новой карточке */
+export function sendNewCardInfo({ name, link }) {
+  return makeRequest("/cards", "POST", { name, link });
+}
+
+/* Отправить на сервер запрос на удаление карточки */
+export function deleteCard(id) {
+  return makeRequest(`/cards/${id}`, "DELETE");
+}
+
+/* Изменить лайк/анлайк */
+export function changeLikeCardStatus(id, isLiked) {
+  let method;
+  isLiked ? (method = "DELETE") : (method = "PUT");
+  return makeRequest(`/cards/${id}/likes`, method);
+}

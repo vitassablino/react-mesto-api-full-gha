@@ -1,5 +1,4 @@
 import AuthForm from "./AuthForm";
-import auth from "../utils/auth";
 
 function Login({
   setUserEmail,

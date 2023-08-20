@@ -8,8 +8,7 @@ import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 
-import api from "../utils/Api";
-import auth from "../utils/auth";
+import * as api from "../utils/Api";
 
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -39,168 +38,225 @@ function App() {
   ];
   const [cards, setCards] = useState([]);
 
-
-  /* Проверка jwt и установка соотв.-их стейтов */
-  const checkToken = useCallback(() => {
-    const jwt = localStorage.getItem("jwt")
-    if (jwt) {
-      auth.getContent(jwt)
-      .then((res) => {
-        setUserEmail(res.email);
-        setLoggedIn(true);
-        navigate('/', { replace: true });
-      })
-        .catch((err) => console.log(err));
-    }
-  }, [navigate]);
-
+  /* Получение данных с сервера */
   useEffect(() => {
-    checkToken();
-  }, [checkToken]);
-
-  /* Функция выхода */
-  function handleSignOut() {
-    localStorage.clear("jwt");
-    setLoggedIn(false);
-    navigate("/signin", { replace: true });
-  }
-
-  /* Функция переключения бургенр-меню*/
-  function handleToggleBurger() {
-    setIsOpenBurger(!isOpenBurger);
-  }
-
-  /* получение данныъ пользователя и карточек */
-  useEffect(() => {
-    if (loggedIn) {
-      Promise.all([api.getUserData(), api.getInitialCards()])
-        .then((res) => {
-          const [userData, cardsArray] = res;
-          setCards(cardsArray);
-          console.log("начальные карточки установлены");
+    loggedIn &&
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, cardsData]) => {
           setCurrentUser(userData);
-          console.log("Данные пользователя установлены")
+          setCards(cardsData.reverse());
         })
-        .catch((err) => console.log(err));
-    }
+        .catch((err) => {
+          console.log(err);
+        });
   }, [loggedIn]);
 
-  /* Функция закрытия мод.окон */
-  function closeAllPopups() {
+  /* Клик по аватарке => открытие попапа редактирования аватара */
+  const handleEditAvatarClick = useCallback(() => {
+    setIsEditAvatarPopupOpen(true);
+  }, []);
+
+  /* Клик по редактированию профиля => открытие попапа редактирования профиля */
+  const handleEditProfileClick = useCallback(() => {
+    setIsEditProfilePopupOpen(true);
+  }, []);
+
+  /* КОбработчик открытия попапа добавления карточки */
+  const handleAddCardSubmit = useCallback(() => {
+    setIsAddCardPopupOpen(true);
+  }, []);
+
+  /* Обработчик удаления карточки */
+  const handleDeleteClick = useCallback((card) => {
+    console.log(card);
+    setCardToDelete(card);
+  }, []);
+
+  /* Обработчик клика по карточке */
+  const handleCardClick = useCallback((card) => {
+    setSelectedCard(card);
+  }, []);
+
+  /* Обработчик закрытия мод.окон */
+  const closeAllPopups = useCallback(() => {
     allSetsPopupOpen.forEach((item) => item(false));
     setSelectedCard({ name: "", link: "" });
     setCardToDelete(null);
     setIsLoading(false);
-  }
+  }, []);
 
-  /* Фнункция обновления аватарки */
-  function handleUpdateAvatar(avatarData) {
-    setIsLoading(true);
-    api
-      .editAvatar(avatarData)
-      .then((userData) => {
-        setCurrentUser(userData);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }
+  /* Обработчик переключения бургенр-меню*/
+  const handleToggleBurger = useCallback(() => {
+    setIsOpenBurger(!isOpenBurger);
+  }, []);
 
-  /* Функция обновления информации о пользователе */
-  function handleUpdateUser(data) {
-    if (data.name === currentUser.name && data.about === currentUser.about) {
-      closeAllPopups();
-    } else {
-      setIsLoading(true);
-    api
-      .setUserData(data)
-      .then((userData) => {
-        setCurrentUser(userData);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }}
-
-  /* Фнункция добавления места */
-  function handleAddCardSubmit(cardData) {
-    setIsLoading(true);
-    api
-      .addNewCard(cardData)
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }
-
-  /* Фнункция выбора карточки */
-  function handleCardClick(card) {
-    setSelectedCard(card);
-  }
-
-  /* Фнункция лайка */
-  function handleCardLike(card) {
+   /* Фнункция лайка */
+   const handleCardLike = useCallback (
+    async (card) => {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    console.log(card.id);
-
-    api
-      .changeLike(card.id, isLiked)
-      .then((newCard) => {
+    try {
+      const data = await api.changeLikeCardStatus(card._id, isLiked);
+      if (data) {
         setCards((state) =>
-          state.map((c) => (c._id === card.id ? newCard : c))
+          state.map((item) => (item._id === card._id ? data : item))
         );
-      })
-      .catch((err) => console.log(err));
-  }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  },
+  [currentUser._id] );
 
-  /*Функция удаления карточки */
-  function handleCardDelete(cardId) {
-    
-    console.log(cardId);
-    setCardToDelete(cardId);
-  }
-
-  /*Функция подтверждения удаления карточки */
-  function handleConfirmBeforeDelete() {
-    setIsLoading(true);
-    api
-      .delete(cardToDelete)
-      .then(() => {
-        setCards(cards.filter((c) => c._id !== cardToDelete));
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-  }
-
-  /* Функция регистрации */
-  function handleRegistrationUser(data) {
-    console.log(`Данные на входе handleRegistrationUser: ${JSON.stringify(data)}`)
-    auth
-      .getRegistrationUser(data)
-      .then((data) => {
+  /* Обработчик удаления карточки */
+  const handleCardDelete = useCallback(
+    async (card) => {
+      setIsLoading(true);
+      try {
+        const data = await api.deleteCard(card._id);
         if (data) {
-        setIsInfoTooltipOpen({ isOpen: true, status: true });
-        navigate("/signin", { replace: false });
-        }        
-      })
-      .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
-  }
+          setCards((state) => state.filter((item) => item._id !== card._id));
+          closeAllPopups();
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [closeAllPopups]
+  );
 
-  /* Функция авторизации */
-  function handleAuthorizationUser(userData) {
-    auth
-      .getAuthorizationUser(userData)
-      .then((jwt) => {
-        if (jwt) {
+  /* Обработчик обновления пользователя */
+  const handleUpdateUser = useCallback(
+    async (userData) => {
+      setIsLoading(true);
+      try {
+        const data = await api.setUserInfo(userData);
+        if (data) {
+          setCurrentUser(data);
+          closeAllPopups();
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [closeAllPopups]
+  );
+
+    /* Обработчик обновления аватара */
+    const handleUpdateAvatar = useCallback(
+      async (avatarData) => {
+        setIsLoading(true);
+        try {
+          const data = await api.setUserAvatar(avatarData);
+          if (data) {
+            setCurrentUser(data);
+            closeAllPopups();
+          }
+        } catch (err) {
+          console.log(err);
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [closeAllPopups]
+    );
+
+  /* Обработчик добавления карточки */
+  const handleAddPlaceSubmit = useCallback(
+    async (cardData) => {
+      setIsLoading(true);
+      try {
+        const data = await api.sendNewCardInfo(cardData);
+        if (data) {
+          setCards([data, ...cards]);
+          closeAllPopups();
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [cards, closeAllPopups]
+  );
+
+  /* Обработчик регистрации */
+  const handleRegistrationUser = useCallback(
+    async (userData) => {
+      setIsLoading(true);
+      try {
+        const data = await api.register(userData);
+        if (data) {
+          setIsInfoTooltipOpen({ isOpen: true, status: true });
+          navigate("/sign-in", { replace: true });
+        }
+      } catch (err) {
+        console.error(err);
+        setIsInfoTooltipOpen({ isOpen: true, status: false });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate]
+  );
+
+  /* Обработчик авторизации пользователя */
+   const handleAuthorizationUser = useCallback(
+    async (userData) => {
+      setIsLoading(true);
+      try {
+        const data = await api.authorize(userData);
+        if (data) {
           setLoggedIn(true);
+          setUserEmail(userData.email);
           navigate("/", { replace: true });
-        }              
-      })
-      .catch(() => setIsInfoTooltipOpen({ isOpen: true, status: false }));
-  }
+        }
+      } catch (err) {
+        console.error(err);
+        setIsInfoTooltipOpen({ isOpen: true, status: false });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [navigate]
+  );
+  
+ /* Проверка авторизации */
+  const userLoginCheck = useCallback(async () => {
+    try {
+      const userData = await api.getContent();
+      if (!userData) {
+        throw new Error("Данные пользователя отсутствует");
+      }
+      setUserEmail(userData.email);
+      setLoggedIn(true);
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error(err);
+    }}, [navigate]);
+
+  /* Обработчик выхода из учётной записи */
+  const handleUserLogOut = useCallback(async () => {
+    try {
+      const data = await api.logout();
+      if (data) {
+        setLoggedIn(false);
+        setUserEmail("");
+        setIsOpenBurger(false);
+        navigate("/sign-in", { replace: true });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [navigate]);
+
+   useEffect(() => {
+    userLoginCheck();
+  }, [userLoginCheck]);
+
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -208,7 +264,7 @@ function App() {
         <div className="page">
           <Header
             userEmail={userEmail}
-            onSignOut={handleSignOut}
+            onSignOut={handleUserLogOut}
             isOpenBurger={isOpenBurger}
             onToggleBurger={handleToggleBurger}
             
@@ -221,7 +277,6 @@ function App() {
                 <ProtectedRouteElement
                   element={Main}
                   loggedIn={loggedIn}
-                  checkToken={checkToken}
                   onEditProfile={setIsEditProfilePopupOpen} // редактирование профиля
                   onAddPlace={setIsAddCardPopupOpen} // добавление карточки
                   onEditAvatar={setIsEditAvatarPopupOpen} // редактирование аватара
@@ -287,7 +342,7 @@ function App() {
           <ConfirmPopup
             isOpen={cardToDelete}
             onClose={closeAllPopups}
-            onConfirm={handleConfirmBeforeDelete}
+            onConfirm={handleCardDelete}
             title="Вы уверены?"
             buttonText="Да"
           />
