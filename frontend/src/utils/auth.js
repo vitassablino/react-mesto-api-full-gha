@@ -7,14 +7,15 @@ class Auth {
     this._url = options.url;
   }
 
-  #checkResponse(res) {
+  #checkResponse(res, proces) {
     if (res.ok) {
       return res.json();      
     }
-    return Promise.reject(`Ошибка: ${res.status}`);
+    return Promise.reject(`Ошибка: ${res.status} (auth)`);
   }
 
   getRegistrationUser(data) {
+    
  console.log("метод getRegistrationUser запустился");
 
     return fetch(`${this._url}/signup`, {
@@ -41,11 +42,12 @@ class Auth {
         password: data.password,
         email: data.email,
       }),
-    }).then(this.#checkResponse)
+    }).then(console.log(`Отправлен запрос на авторизацию`)).then(this.#checkResponse)
     .then((data) => {
       if (data.token) {
         const { token } = data;
         localStorage.setItem('jwt', token);
+        console.log(`Токен = ${token}`);
         return token;
       };
     });
