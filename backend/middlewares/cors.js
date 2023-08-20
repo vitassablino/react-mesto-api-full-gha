@@ -11,11 +11,12 @@ module.exports = (req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
   const requestHeaders = req.headers['access-control-request-headers'];
-  /* if (allowedList.includes(origin)) { */
+  if (allowedList.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', true);
-  /* } */
+  }
   if (method === 'OPTIONS') {
+    console.log('Предварительный запрос')
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
     res.header('Access-Control-Allow-Headers', requestHeaders);
     return res.end();
