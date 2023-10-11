@@ -10,23 +10,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bjorn86/react-mesto-api-full-gha.git"
+    "url": "git+https://github.com/vitassablino/react-mesto-api-full-gha.git"
   },
   "keywords": [
     "backend",
     "frontend"
   ],
-  "author": "Danila Legkobytov",
+  "author": "Viktor Akula",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Bjorn86/react-mesto-api-full-gha/issues"
+    "url": "https://github.com/vitassablino/react-mesto-api-full-gha/issues"
   },
-  "homepage": "https://github.com/Bjorn86/react-mesto-api-full-gha#readme",
+  "homepage": "https://github.com/vitassablino/react-mesto-api-full-gha#readme",
   "devDependencies": {
     "eslint": "^8.38.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "nodemon": "^2.0.22"
+    "nodemon": "^3.0.1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
