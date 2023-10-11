@@ -1,20 +1,15 @@
 .popup {
-  transition: all 1s ease;
-  z-index: 9;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.popup::before {
-  position: fixed;
-  content: " ";
-  background-color: black;
-  top: 0;
-  left: 0;
-  height: 100%;
+  font-family: "Inter", "Arial", sans-serif;
   width: 100%;
-  z-index: 10;
-  opacity: 0.5;
-  cursor: pointer;
-  transform: scale(1);
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  opacity: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, .5);
+  transition: visibility .6s, opacity .6s;
 }

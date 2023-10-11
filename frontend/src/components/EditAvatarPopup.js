@@ -1,66 +1,60 @@
-import { useFormValidation } from "../utils/useFormValidation";
+import { useEffect } from "react";
+import useValidation from "../utils/useValidation";
+
 import PopupWithForm from "./PopupWithForm";
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading }) {
-  const {
-    values,
-    errors,
-    isValid,
-    handleChange,
-    resetValues,
-    formRef,
-    errorClassName,
-  } = useFormValidation();
+export default function EditAvatarPopup({
+  isOpen,
+  onClose,
+  onUpdateAvatar,
+  onLoading,
+  onOverlayClick,
+}) {
 
-  function handleSubmit(evt) {
-    evt.preventDefault();
+  const { values, errors, isFormValid, onChange, resetValidation } = useValidation();
+  useEffect(() => {
+    resetValidation();
+  }, [isOpen, resetValidation]);
 
-    onUpdateAvatar({
-      avatar: values["profileAvatarLink"],
-    });
-
-    resetValues();
+  function handleSubmit(e) {
+    e.preventDefault();
+    onUpdateAvatar(values);
   }
-
   return (
     <PopupWithForm
-      ref={formRef}
-      name="popup-avatar-edit"
+      name="avatar-edit"
       title="Обновить аватар"
+      buttonText={onLoading ? "Сохранение..." : "Сохранить"}
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      isLoading={isLoading}
-      isOk={isValid}
-      toDoText="Сохранить"
-      ongoingText="Сохранение..."
+      isFormValid={isFormValid}
+      onOverlayClick={onOverlayClick}
     >
       <label className="popup__input-wrapper">
         <input
           type="url"
-          id="avatar"
-          name="profileAvatarLink"
-          className="popup-form__input"
-          placeholder="Ссылка на изображение"
-          value={values["profileAvatarLink"] ?? ""}
-          onChange={handleChange}
+          name="avatar"
+          form="avatar-edit"
           required
+          placeholder="Ссылка на картинку"
+          className={`form__input ${
+            errors.avatar ? "form__input_type_error" : ""
+          }`}
+          id="avatar-link-input"
+          onChange={onChange}
+          value={values.avatar || ""}
         />
-        <span className={errorClassName("profileAvatarLink")} id="avatar-error">
-          {errors["profileAvatarLink"]}
+        <span
+          className={`form__input-error ${
+            errors.avatar ? "form__input-error_active" : ""
+          }`}
+        >
+          {errors.avatar || ""}
         </span>
       </label>
-      {/* <button
-        type="submit"
-        className={`popup-form__save-button ${
-          isValid ? "" : "popup-form__save-button_disabled"
-        }`}
-        disabled={isValid ? false : true}
-      >
-        {isLoading ? "Сохранение..." : "Сохранить"}
-      </button> */}
     </PopupWithForm>
   );
 }
 
-export default EditAvatarPopup;
+

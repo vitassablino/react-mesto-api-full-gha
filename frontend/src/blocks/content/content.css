@@ -1,14 +1,16 @@
 .content {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  max-width: 100%;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  gap: 50px;
+  padding: 40px 0 66px;
+  flex-grow: 1;
 }
 
-@media screen and (max-width: 719px) {
+@media screen and (max-width: 544px) {
   .content {
-    padding: 0 19px 0;
+    padding-top: 42px;
+    padding-bottom: 48px;
+    gap: 36px;
   }
 }

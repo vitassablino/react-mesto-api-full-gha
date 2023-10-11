@@ -1,6 +1,6 @@
-const BASE_URL = "https://api.mesto.frontend.akula.nomoreparties.co"
+const BASE_URL = "https://api.mesto.frontend.akula.nomoreparties.co";
 
-/* Запрос серверу */
+/* Запрос на сервер */
 function makeRequest(url, method, body) {
   const headers = { "Content-Type": "application/json" };
   const config = { method, headers, credentials: "include" };
@@ -14,58 +14,73 @@ function makeRequest(url, method, body) {
   });
 }
 
-/* Регистрация пользователя */
-export function register({ password, email }) {
+/* Функция регистрации пользователя */
+function register({ password, email }) {
   return makeRequest("/signup", "POST", { password, email });
 }
 
-/* Авторизация пользователя */
-export function authorize({ password, email }) {
+/* Функция авторизации пользователя */
+function authorize({ password, email }) {
   return makeRequest("/signin", "POST", { password, email });
 }
 
-/* Выход из учётной записи */
-export function logout() {
+/* Функция выхода пользователя */
+function logout() {
   return makeRequest("/users/me", "DELETE");
 }
- /* Получение данных пользователя с сервера */
- export function getContent() {
+
+/* Функция запроса данных */
+function getContent() {
   return makeRequest("/users/me", "GET");
 }
 
- /* Получение ифнормации о пользователе с сервера */
- export function getUserInfo() {
+/*Функция запроса данных о пользователе */
+function getUserInfo() {
   return makeRequest("/users/me", "GET");
 }
 
-/* Отправить информацию о пользователе на сервер */
-export function setUserInfo({ name, about }) {
+/* Функция отправки данных о пользователе */
+function setUserInfo({ name, about }) {
   return makeRequest("/users/me", "PATCH", { name, about });
 }
 
-/* Отправить данные об аватарке на сервер */
-export function setUserAvatar({ avatar }) {
+/* Функция изменения аватара пользователя */
+function setUserAvatar({ avatar }) {
   return makeRequest("/users/me/avatar", "PATCH", { avatar });
 }
 
-/* Получение стартовых карточек */
-export function getInitialCards() {
+/* Функция запроса стартовых карточек */
+function getInitialCards() {
   return makeRequest("/cards", "GET");
 }
 
-/* Отпрвить данные о новой карточке */
-export function sendNewCardInfo({ name, link }) {
+/* Функция отправки новой карточки */
+function sendNewCardInfo({ name, link }) {
   return makeRequest("/cards", "POST", { name, link });
 }
 
-/* Отправить на сервер запрос на удаление карточки */
-export function deleteCard(id) {
+/* Функция удаления карточки */
+function deleteCard(id) {
   return makeRequest(`/cards/${id}`, "DELETE");
 }
 
-/* Изменить лайк/анлайк */
-export function changeLikeCardStatus(id, isLiked) {
+/* Функция установки/снятия лайка */
+function changeLikeCardStatus(id, isLiked) {
   let method;
   isLiked ? (method = "DELETE") : (method = "PUT");
   return makeRequest(`/cards/${id}/likes`, method);
+}
+
+export {
+  register,
+  authorize,
+  logout,
+  getContent,
+  getUserInfo,
+  setUserInfo,
+  setUserAvatar,
+  getInitialCards,
+  sendNewCardInfo,
+  deleteCard,
+  changeLikeCardStatus,
 }

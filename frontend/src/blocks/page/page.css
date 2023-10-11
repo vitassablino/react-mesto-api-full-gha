@@ -1,17 +1,12 @@
 .page {
-  max-width: 1280px;
-  min-width: 320px;
-  width: 100%;
   min-height: 100vh;
+  max-width: 100vw;
   background-color: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 45px 200px 60px;
+  padding-bottom: 60px;
 }
 
-@media screen and (max-width: 719px) {
+@media screen and (max-width: 544px) {
   .page {
-    margin: 28px 0 36px;
+    padding-bottom: 36px;
   }
 }

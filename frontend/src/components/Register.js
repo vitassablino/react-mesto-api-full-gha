@@ -1,34 +1,68 @@
-import { Link } from "react-router-dom";
-import AuthForm from "./AuthForm";
-//import auth from "../utils/auth";
+import useValidation from "../utils/useValidation";
+import AuthScreen from "./AuthScreen";
 
-function Register({
-  navigate,
-  setUserEmail,
-  onInfoTooltipOpen,
-  handleRegistrationUser,
-}) {
-  /* function handleRegistrationUser(userData) {
-    auth
-      .getRegistrationUser(userData)
-      .then((data) => {
-        navigate("/signin");
-        setUserEmail(data.email);
-        onInfoTooltipOpen({ isOpen: true, status: true });
-      })
-      .catch(() => onInfoTooltipOpen({ isOpen: true, status: false }));
-  } */
+function Register({ onRegistr, onLoading }) {
+  const { values, errors, isFormValid, onChange } = useValidation();
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    onRegistr(values);
+  }
+  
   return (
-    <AuthForm
+    <AuthScreen
+      name="registr"
       title="Регистрация"
-      btnText="Зарегистрироваться"
-      handleSubmit={handleRegistrationUser}
+      buttonText={onLoading ? "Регистрация..." : "Зарегистрироваться"}
+      onSubmit={handleSubmit}
+      isFormValid={isFormValid}
     >
-      <Link to="/" className="auth-form__link">
-        Уже зарегистрированы? Войти
-      </Link>
-    </AuthForm>
+      <label className="form__input-wrapper">
+        <input
+          type="email"
+          name="email"
+          form="registr"
+          required
+          placeholder="Email"
+          className={`form__input form__input_place_authorization ${
+            errors.email ? "form__input_type_error" : ""
+          }`}
+          id="email-input"
+          onChange={onChange}
+          value={values.email || ""}
+        />
+        <span
+          className={`form__input-error ${
+            errors.email ? "form__input-error_active" : ""
+          }`}
+        >
+          {errors.email || ""}
+        </span>
+      </label>
+      <label className="form__input-wrapper">
+        <input
+          type="password"
+          name="password"
+          form="registr"
+          required
+          minLength="6"
+          placeholder="Пароль"
+          className={`form__input form__input_place_authorization ${
+            errors.password ? "form__input_type_error" : ""
+          }`}
+          id="password-input"
+          onChange={onChange}
+          value={values.password || ""}
+        />
+        <span
+          className={`form__input-error ${
+            errors.password ? "form__input-error_active" : ""
+          }`}
+        >
+          {errors.password || ""}
+        </span>
+      </label>
+    </AuthScreen>
   );
 }
 

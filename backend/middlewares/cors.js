@@ -1,29 +1,16 @@
-const allowedList = [
-  'http://localhost:3000',
-  'https://localhost:3000',
-  'https://localhost:4000',
-  'http://localhost:4000',
-  'http://158.160.52.136',
-  'https://158.160.52.136',
-  'http://mesto.frontend.akula.nomoreparties.co',
-  'https://mesto.frontend.akula.nomoreparties.co',
-  'http://api.mesto.frontend.akula.nomoreparties.co',
-  'https://api.mesto.frontend.akula.nomoreparties.co'
-];
+// CORS VARIABLES
+const { ALLOWED_CORS, DEFAULT_ALLOWED_METHODS } = require('../utils/constants');
 
-const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-
+// CORS MIDDLEWARE
 module.exports = (req, res, next) => {
   const { origin } = req.headers;
-  const { method } = req; // Сохраняем тип запроса (HTTP-метод) в соответствующую переменную
-  const requestHeaders = req.headers['access-control-request-headers']; // сохраняем список заголовков исходного запроса
-  if (allowedList.includes(origin)) {
-    console.log('Запрос с разрешённого источника');
+  const { method } = req;
+  const requestHeaders = req.headers['access-control-request-headers'];
+  if (ALLOWED_CORS.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', true);
   }
   if (method === 'OPTIONS') {
-    console.log('Предварительный запрос')
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
     res.header('Access-Control-Allow-Headers', requestHeaders);
     return res.end();

@@ -1,39 +1,41 @@
-import iconDone from "../images/icon-ok.svg";
-import iconError from "../images/icon-error.svg";
+// IMPORT COMPONENTS
+import Popup from "./Popup";
 
-function InfoTooltip({ isOpenConfig, onClose }) {
+// INFORMATION TOOLTIP COMPONENT
+function InfoTooltip({ isOpen, onClose, status }) {
+  // HANDLE CLASS TOGGLE
+  function handleClassToggle(status) {
+    if (status === "success") {
+      return "popup__status-icon_type_success";
+    } else if (status === "fail") {
+      return "popup__status-icon_type_fail";
+    } else {
+      return "";
+    }
+  }
+  // HANDLE TEXT TOGGLE
+  function handleTextToggle(status) {
+    if (status === "success") {
+      return "Вы успешно зарегистрировались!";
+    } else if (status === "fail") {
+      return "Что-то пошло не так! Попробуйте ещё раз.";
+    } else {
+      return "";
+    }
+  }
   return (
-    <section
-      className={`infoTooltip ${
-        isOpenConfig.isOpen ? "infoTooltip_opened" : ""
-      }`}
-      onClick={({ target }) => {
-        if (
-          target.classList.contains("infoTooltip_opened") ||
-          target.classList.contains("infoTooltip__close")
-        ) {
-          onClose();
-        }
-      }}
+    <Popup
+      isOpen={isOpen}
+      onClose={onClose}
+      type="form"
     >
-      <div className="infoTooltip__container">
-        <button
-          type="button"
-          onClick={onClose}
-          className="infoTooltip__close"
-        />
-        <img
-          src={isOpenConfig.status ? iconDone : iconError}
-          className="infoTooltip__img"
-          alt=""
-        ></img>
-        <p className="infoTooltip__text">
-          {isOpenConfig.status
-            ? "Вы успешно зарегистрировались!"
-            : "Что-то пошло не так! Попробуйте ещё раз."}
-        </p>
+      <div className="popup__status-wrapper">
+        <div
+          className={`popup__status-icon ${handleClassToggle(status)}`}
+        ></div>
+        <p className="popup__status-text">{handleTextToggle(status)}</p>
       </div>
-    </section>
+    </Popup>
   );
 }
 

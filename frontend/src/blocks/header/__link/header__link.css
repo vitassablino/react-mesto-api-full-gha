@@ -1,20 +1,18 @@
 .header__link {
-  display: block;
-  color: white;
-  font-size: 14px;
-  line-height: 17px;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.21;
+  color: #fff;
   text-decoration: none;
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity .6s;
 }
 
 .header__link:hover {
   opacity: 0.6;
 }
 
-@media screen and (min-width: 992px) {
+@media screen and (max-width: 544px) {
   .header__link {
-    font-size: 18px;
-    line-height: 22px;
+    font-size: 14px;
   }
 }

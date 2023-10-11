@@ -1,7 +1,8 @@
-
+// IMPORT PACKAGES
 const winston = require('winston');
 const expressWinston = require('express-winston');
 
+// REQUEST LOGGER
 const requestLogger = expressWinston.logger({
   transports: [
     new winston.transports.File({
@@ -13,6 +14,7 @@ const requestLogger = expressWinston.logger({
   format: winston.format.json(),
 });
 
+// ERROR LOGGER
 const errorLogger = expressWinston.errorLogger({
   transports: [
     new winston.transports.File({

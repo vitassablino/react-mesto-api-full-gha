@@ -1,44 +1,41 @@
-import { useCallback, useEffect, useState } from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { Navigate, useNavigate, Route, Routes } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import AppLayout from "./AppLayout";
 import Login from "./Login";
 import Register from "./Register";
-import ProtectedRouteElement from "./ProtectedRoute";
-import Header from "./Header";
 import Main from "./Main";
-import Footer from "./Footer";
-
-import * as api from "../utils/Api";
-
+import ImagePopup from "./ImagePopup";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
-import AddCardPopup from "./AddCardPopup";
-import ConfirmPopup from "./ConfirmPopup";
-import ImagePopup from "./ImagePopup";
+import AddPlacePopup from "./AddPlacePopup";
+import DeleteCardPopup from "./DeleteCardPopup";
 import InfoTooltip from "./InfoTooltip";
+import ProtectedRouteElement from "./ProtectedRoute";
+import NotFound from "./NotFound";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import * as api from "../utils/api";
+
 
 function App() {
-  const navigate = useNavigate();
+
+  const [isEditAvatarPopupOpen, setEditAvatarPopupClass] = useState(false);
+  const [isEditProfilePopupOpen, setEditProfilePopupClass] = useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupClass] = useState(false);
+  const [isDeleteCardPopupOpen, setDeleteCardPopupClass] = useState(false);
+  const [isInfoTooltipPopupOpen, setInfoTooltipPopupClass] = useState(false);
+  const [isHamburgerOpen, setHamburgerClass] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [infoTooltipStatus, setInfoTooltipStatus] = useState("");
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [cardToDelete, setCardToDelete] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+  const [cards, setCards] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const [currentUser, setCurrentUser] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpenBurger, setIsOpenBurger] = useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
-  const [isAddCardPopupOpen, setIsAddCardPopupOpen] = useState(false);
-  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState({ name: "", link: "" });
-  const [cardToDelete, setCardToDelete] = useState(null);
-  const allSetsPopupOpen = [
-    setIsEditAvatarPopupOpen,
-    setIsEditProfilePopupOpen,
-    setIsAddCardPopupOpen,
-    setIsInfoTooltipOpen,
-  ];
-  const [cards, setCards] = useState([]);
 
-  /* Получение данных с сервера */
+  const navigate = useNavigate();
+
+/* Получение стартовых данных */
   useEffect(() => {
     loggedIn &&
       Promise.all([api.getUserInfo(), api.getInitialCards()])
@@ -51,66 +48,70 @@ function App() {
         });
   }, [loggedIn]);
 
-  /* Клик по аватарке => открытие попапа редактирования аватара */
+/* Обработчик изменения автарки */
   const handleEditAvatarClick = useCallback(() => {
-    setIsEditAvatarPopupOpen(true);
+    setEditAvatarPopupClass(true);
   }, []);
 
-  /* Клик по редактированию профиля => открытие попапа редактирования профиля */
+/* Обпвботчик изменения данных профиля */
   const handleEditProfileClick = useCallback(() => {
-    setIsEditProfilePopupOpen(true);
+    setEditProfilePopupClass(true);
   }, []);
 
-  /* КОбработчик открытия попапа добавления карточки */
-  const handleAddCardSubmit = useCallback(() => {
-    setIsAddCardPopupOpen(true);
+/* Обработчик добавления карточки */
+  const handleAddPlaceClick = useCallback(() => {
+    setAddPlacePopupClass(true);
   }, []);
-
-  /* Обработчик удаления карточки */
+/* Обработчик удаления карточки */
   const handleDeleteClick = useCallback((card) => {
-    console.log(card);
+    setDeleteCardPopupClass(true);
     setCardToDelete(card);
   }, []);
 
-  /* Обработчик клика по карточке */
+/* Обработчик нажатия на карточку */
   const handleCardClick = useCallback((card) => {
     setSelectedCard(card);
   }, []);
 
-  /* Обработчик закрытия мод.окон */
+  /* Закрытие всех попапов */
   const closeAllPopups = useCallback(() => {
-    allSetsPopupOpen.forEach((item) => item(false));
-    setSelectedCard({ name: "", link: "" });
-    setCardToDelete(null);
-    setIsLoading(false);
+    setEditAvatarPopupClass(false);
+    setEditProfilePopupClass(false);
+    setAddPlacePopupClass(false);
+    setDeleteCardPopupClass(false);
+    setInfoTooltipPopupClass(false);
+    setSelectedCard(null);
+    setCardToDelete({});
+    setInfoTooltipStatus("");
   }, []);
 
-  /* Обработчик переключения бургенр-меню*/
-  const handleToggleBurger = useCallback(() => {
-    setIsOpenBurger(!isOpenBurger);
-  }, []);
+ /* Обработчик клика по меню */
+  const handleHamburgerClick = useCallback(() => {
+    setHamburgerClass(!isHamburgerOpen);
+  }, [isHamburgerOpen]);
 
-   /* Фнункция лайка */
-   const handleCardLike = useCallback (
+  /* Обработчик клика по карточке */
+  const handleCardLike = useCallback(
     async (card) => {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    try {
-      const data = await api.changeLikeCardStatus(card._id, isLiked);
-      if (data) {
-        setCards((state) =>
-          state.map((item) => (item._id === card._id ? data : item))
-        );
+      const isLiked = card.likes.some((item) => item === currentUser._id);
+      try {
+        const data = await api.changeLikeCardStatus(card._id, isLiked);
+        if (data) {
+          setCards((state) =>
+            state.map((item) => (item._id === card._id ? data : item))
+          );
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  [currentUser._id] );
+    },
+    [currentUser._id]
+  );
 
   /* Обработчик удаления карточки */
   const handleCardDelete = useCallback(
     async (card) => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data = await api.deleteCard(card._id);
         if (data) {
@@ -120,16 +121,16 @@ function App() {
       } catch (err) {
         console.log(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     },
     [closeAllPopups]
   );
 
-  /* Обработчик обновления пользователя */
+  /* Обработчик обновления данных пользователя */
   const handleUpdateUser = useCallback(
     async (userData) => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data = await api.setUserInfo(userData);
         if (data) {
@@ -139,35 +140,35 @@ function App() {
       } catch (err) {
         console.log(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     },
     [closeAllPopups]
   );
 
-    /* Обработчик обновления аватара */
-    const handleUpdateAvatar = useCallback(
-      async (avatarData) => {
-        setIsLoading(true);
-        try {
-          const data = await api.setUserAvatar(avatarData);
-          if (data) {
-            setCurrentUser(data);
-            closeAllPopups();
-          }
-        } catch (err) {
-          console.log(err);
-        } finally {
-          setIsLoading(false);
+  /* Обработчик обновления аватара */
+  const handleUpdateAvatar = useCallback(
+    async (avatarData) => {
+      setLoading(true);
+      try {
+        const data = await api.setUserAvatar(avatarData);
+        if (data) {
+          setCurrentUser(data);
+          closeAllPopups();
         }
-      },
-      [closeAllPopups]
-    );
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [closeAllPopups]
+  );
 
-  /* Обработчик добавления карточки */
+  /* Обработчик добавления картчоки */
   const handleAddPlaceSubmit = useCallback(
     async (cardData) => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data = await api.sendNewCardInfo(cardData);
         if (data) {
@@ -177,36 +178,38 @@ function App() {
       } catch (err) {
         console.log(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     },
     [cards, closeAllPopups]
   );
 
-  /* Обработчик регистрации */
-  const handleRegistrationUser = useCallback(
+  /* Обрабочтик регистрации пользователя */
+  const handleUserRegistration = useCallback(
     async (userData) => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data = await api.register(userData);
         if (data) {
-          setIsInfoTooltipOpen({ isOpen: true, status: true });
+          setInfoTooltipStatus("success");
+          setInfoTooltipPopupClass(true);
           navigate("/sign-in", { replace: true });
         }
       } catch (err) {
         console.error(err);
-        setIsInfoTooltipOpen({ isOpen: true, status: false });
+        setInfoTooltipStatus("fail");
+        setInfoTooltipPopupClass(true);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     },
     [navigate]
   );
-
-  /* Обработчик авторизации пользователя */
-   const handleAuthorizationUser = useCallback(
+ 
+  /* обработчик авторизации  */
+  const handleUserAuthorization = useCallback(
     async (userData) => {
-      setIsLoading(true);
+      setLoading(true);
       try {
         const data = await api.authorize(userData);
         if (data) {
@@ -216,15 +219,16 @@ function App() {
         }
       } catch (err) {
         console.error(err);
-        setIsInfoTooltipOpen({ isOpen: true, status: false });
+        setInfoTooltipStatus("fail");
+        setInfoTooltipPopupClass(true);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     },
     [navigate]
   );
-  
- /* Проверка авторизации */
+
+  /* обработчик логина */
   const userLoginCheck = useCallback(async () => {
     try {
       const userData = await api.getContent();
@@ -238,14 +242,14 @@ function App() {
       console.error(err);
     }}, [navigate]);
 
-  /* Обработчик выхода из учётной записи */
+  /* Обработчик выхода пользователя */
   const handleUserLogOut = useCallback(async () => {
     try {
       const data = await api.logout();
       if (data) {
         setLoggedIn(false);
         setUserEmail("");
-        setIsOpenBurger(false);
+        setHamburgerClass(false);
         navigate("/sign-in", { replace: true });
       }
     } catch (err) {
@@ -253,108 +257,96 @@ function App() {
     }
   }, [navigate]);
 
-   useEffect(() => {
+  useEffect(() => {
     userLoginCheck();
   }, [userLoginCheck]);
 
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="body">
-        <div className="page">
-          <Header
-            userEmail={userEmail}
-            onSignOut={handleUserLogOut}
-            isOpenBurger={isOpenBurger}
-            onToggleBurger={handleToggleBurger}
-            
-          />
-
-          <Routes>
+    <div className="page__content">
+      <CurrentUserContext.Provider value={currentUser}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <AppLayout
+                email={userEmail}
+                isOpen={isHamburgerOpen}
+                onHamburgerClick={handleHamburgerClick}
+                onLogOut={handleUserLogOut}
+              />
+            }
+          >
             <Route
-              path="/"
+              index
               element={
                 <ProtectedRouteElement
                   element={Main}
-                  loggedIn={loggedIn}
-                  onEditProfile={setIsEditProfilePopupOpen} // редактирование профиля
-                  onAddPlace={setIsAddCardPopupOpen} // добавление карточки
-                  onEditAvatar={setIsEditAvatarPopupOpen} // редактирование аватара
-                  onCardClick={handleCardClick} // нажатие на карточку
                   cards={cards}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
                   onCardLike={handleCardLike}
-                  onCardDelete={handleCardDelete} // удаление карточки
+                  onCardDelete={handleDeleteClick}
+                  loggedIn={loggedIn}
                 />
               }
             />
-
             <Route
-              path="/signin"
+              path="/sign-in"
               element={
                 <Login
-                  setUserEmail={setUserEmail}
-                  setLoggedIn={setLoggedIn}
-                  navigate={navigate}
-                  onInfoTooltipOpen={setIsInfoTooltipOpen}
-                  handleAuthorizationUser={handleAuthorizationUser}
+                  onLogin={handleUserAuthorization}
+                  onLoading={isLoading}
                 />
               }
-            ></Route>
-
+            />
             <Route
-              path="/signup"
+              path="/sign-up"
               element={
                 <Register
-                  setUserEmail={setUserEmail}
-                  navigate={navigate}
-                  onInfoTooltipOpen={setIsInfoTooltipOpen}
-                  handleRegistrationUser={handleRegistrationUser}
+                  onRegistr={handleUserRegistration}
+                  onLoading={isLoading}
                 />
               }
-            ></Route>
-            <Route path="*" element={<Navigate to="/" replace={true} />} />
-          </Routes>
-
-          {loggedIn && <Footer />}
-
-          <EditProfilePopup
-            isOpen={isEditProfilePopupOpen}
-            onClose={closeAllPopups}
-            onUpdateUser={handleUpdateUser}
-            isLoading={isLoading}
-          />
-          <EditAvatarPopup
-            isOpen={isEditAvatarPopupOpen}
-            onClose={closeAllPopups}
-            onUpdateAvatar={handleUpdateAvatar}
-            isLoading={isLoading}
-          />
-
-          <AddCardPopup
-            isOpen={isAddCardPopupOpen}
-            onClose={closeAllPopups}
-            onAddCard={handleAddCardSubmit}
-            isLoading={isLoading}
-          />
-
-          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-
-          <ConfirmPopup
-            isOpen={cardToDelete}
-            onClose={closeAllPopups}
-            onConfirm={handleCardDelete}
-            title="Вы уверены?"
-            buttonText="Да"
-          />
-
-          <InfoTooltip
-            onClose={closeAllPopups}
-            /* handleRegistrationUser={handleRegistrationUser} */
-            isOpenConfig={isInfoTooltipOpen}
-          />
-        </div>
-      </div>
-    </CurrentUserContext.Provider>
+            />
+            <Route path="/*" element={<NotFound />} />
+          </Route>
+        </Routes>
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+          onLoading={isLoading}
+        />
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+          onLoading={isLoading}
+        />
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+          onLoading={isLoading}
+        />
+        <DeleteCardPopup
+          isOpen={isDeleteCardPopupOpen}
+          onClose={closeAllPopups}
+          onDeleteCard={handleCardDelete}
+          onLoading={isLoading}
+          card={cardToDelete}
+        />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <InfoTooltip
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closeAllPopups}
+          status={infoTooltipStatus}
+        />
+      </CurrentUserContext.Provider>
+    </div>
   );
 }
 

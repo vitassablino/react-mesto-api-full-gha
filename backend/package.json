@@ -1,46 +1,45 @@
 {
-  "name": "express-mesto-gha",
+  "name": "react-mesto-api-full-gha",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mesto Project",
   "main": "app.js",
   "scripts": {
+    "lint": "npx eslint ./",
     "start": "node app.js",
-    "dev": "nodemon app.js",
-    "lint": "eslint  ."
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/vitassablino/express-mesto-gha.git"
+    "url": "git+https://github.com/Bjorn86/react-mesto-api-full-gha.git"
   },
-  "author": "Akula Viktor",
+  "keywords": [
+    "backend",
+    "frontend"
+  ],
+  "author": "Danila Legkobytov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/vitassablino/express-mesto-gha/issues"
+    "url": "https://github.com/Bjorn86/react-mesto-api-full-gha/issues"
   },
-  "homepage": "https://github.com/vitassablino/express-mesto-gha#readme",
+  "homepage": "https://github.com/Bjorn86/react-mesto-api-full-gha#readme",
   "devDependencies": {
-    "eslint": "^8.2.0",
+    "eslint": "^8.38.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "nodemon": "^3.0.1"
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
-    "accepts": "^1.3.8",
-    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.2",
     "celebrate": "^15.0.1",
     "cookie-parser": "^1.4.6",
-    "cookieparser": "^0.1.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "express-rate-limit": "^6.8.0",
+    "express-rate-limit": "^6.7.0",
     "express-winston": "^4.2.0",
-    "joi": "^17.9.2",
-    "jsonwebtoken": "^9.0.1",
-    "mongoose": "^7.3.4",
+    "helmet": "^6.1.5",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
     "validator": "^13.9.0",
-    "winston": "^3.10.0"
+    "winston": "^3.8.2"
   }
 }
