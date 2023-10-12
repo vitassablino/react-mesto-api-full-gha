@@ -1,8 +1,8 @@
-const http2 = require('http2');
+/* const http2 = require('http2'); */
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
-const AuthorizationError = require('../utils/constants');
+const AuthorizationError = require('../errors/authorizationError');
 const { LINK_REGEXP } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
   versionKey: false,
 
   statics: {
-    findUserByCredentials(email, password, res) {
+    findUserByCredentials(email, password) {
       return this.findOne({ email }).select('+password')
         .then((user) => {
           if (!user) {
@@ -58,7 +58,9 @@ const userSchema = new mongoose.Schema({
           return bcrypt.compare(password, user.password)
             .then((matched) => {
               if (!matched) {
-                res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
+                throw new AuthorizationError('Нет пользователя с таким id');
+                /* res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).
+                send({ message: 'Неверный логин или пароль' }); */
               }
 
               return user;
