@@ -1,7 +1,5 @@
-// CORS VARIABLES
 const { ALLOWED_CORS, DEFAULT_ALLOWED_METHODS } = require('../utils/constants');
 
-// CORS MIDDLEWARE
 module.exports = (req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
