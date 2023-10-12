@@ -47,11 +47,10 @@ const userSchema = new mongoose.Schema({
   versionKey: false,
 
   statics: {
-    findUserByCredentials(email, password) {
+    findUserByCredentials(email, password, res) {
       return this.findOne({ email }).select('+password')
         .then((user) => {
           if (!user) {
-            // eslint-disable-next-line no-undef
             res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
           }
 
