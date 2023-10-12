@@ -50,7 +50,8 @@ const userSchema = new mongoose.Schema({
       return this.findOne({ email }).select('+password')
         .then((user) => {
           if (!user) {
-            res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
+            throw new Error('Нет пользователя с таким id');
+            /* res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' }); */
           }
 
           return bcrypt.compare(password, user.password)
