@@ -32,6 +32,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail()
     .then((card) => {
+      if (!card) {
+        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Произошла ошибка:  карточка с указанным ID не обнаружена' });
+        return;
+      }
       Card.deleteOne({ _id: card._id, owner: req.user._id })
         .then((result) => {
           if (result.deletedCount === 0) {
