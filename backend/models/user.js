@@ -52,11 +52,13 @@ const userSchema = new mongoose.Schema({
           if (!user) {
             res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
           }
+
           return bcrypt.compare(password, user.password)
             .then((matched) => {
               if (!matched) {
                 res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
               }
+
               return user;
             });
         });
