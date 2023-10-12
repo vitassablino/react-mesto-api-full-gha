@@ -10,7 +10,7 @@ function makeRequest(url, method, body) {
   return fetch(`${BASE_URL}${url}`, config).then((res) => {
     return res.ok
       ? res.json()
-      : Promise.reject(`Ошибка: ${res.status} ${res.statusText}`);
+      : Promise.reject(`Ошибка от api.js: ${res.status} ${res.statusText}`);
   });
 }
 
