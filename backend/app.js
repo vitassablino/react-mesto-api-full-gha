@@ -7,7 +7,6 @@ const helmet = require('helmet');
 const validationErrors = require('celebrate').errors;
 const rootRouter = require('./routes/index');
 const limiter = require('./middlewares/limiter');
-const errors = require('./middlewares/errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
 
@@ -38,6 +37,5 @@ app.use('/', rootRouter);
 app.use(errorLogger);
 
 app.use(validationErrors());
-app.use(errors);
 
 app.listen(PORT || DEFAULT_PORT);
