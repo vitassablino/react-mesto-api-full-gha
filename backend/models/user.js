@@ -1,7 +1,7 @@
+const http2 = require('http2');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
-const http2 = require('http2');
 const { LINK_REGEXP } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema({
