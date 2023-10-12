@@ -10,6 +10,7 @@ const limiter = require('./middlewares/limiter');
 const errors = require('./middlewares/errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
+
 const { PORT, DATABASE } = process.env;
 const { DEFAULT_PORT, DEFAULT_DATABASE } = require('./utils/config');
 
@@ -38,6 +39,5 @@ app.use(errorLogger);
 
 app.use(validationErrors());
 app.use(errors);
-
 
 app.listen(PORT || DEFAULT_PORT);

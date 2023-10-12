@@ -9,9 +9,9 @@ const {
 } = require('mongoose').Error;
 
 const User = require('../models/user');
+
 const { NODE_ENV, SECRET_KEY } = process.env;
 const { MODE_PRODUCTION, DEV_KEY } = require('../utils/config');
-const { CREATE_CODE } = require('../utils/constants');
 
 /* Обработка GET запроса /users */
 module.exports.getAllUsers = (req, res, next) => {
@@ -27,22 +27,19 @@ const findUserById = (req, res, requiredData, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof DocumentNotFoundError) {
-        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message: "Пользователь с данным ID не обнаружен"});
+        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь с данным ID не обнаружен' });
         return;
-      } else if (err instanceof CastError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({message: "Пользователь с данным ID не обнаружен"});
-        return;
+      } if (err instanceof CastError) {
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Пользователь с данным ID не обнаружен' });
       } else {
         next(err);
       }
     });
 };
 
-
 module.exports.getUser = (req, res, next) => {
   findUserById(req, res, req.params.userId, next);
 };
-
 
 module.exports.getUserInfo = (req, res, next) => {
   findUserById(req, res, req.user._id, next);
@@ -78,11 +75,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof ValidationError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-        return;
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}` });
       } else if (err.code === 11000) {
-        res.status(http2.constants.HTTP_STATUS_CONFLICT).send({ message: `Произошла ошибка: ${err.name}: ${err.message}`});
-        return;
+        res.status(http2.constants.HTTP_STATUS_CONFLICT).send({ message: `Произошла ошибка: ${err.name}: ${err.message}` });
       } else {
         next(err);
       }
@@ -96,14 +91,11 @@ const userUpdate = (req, res, updateData, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof DocumentNotFoundError) {
-        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({message:`В базе данных не найден пользователь с ID: ${req.user._id}.`});
-        return;
+        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: `В базе данных не найден пользователь с ID: ${req.user._id}.` });
       } else if (err instanceof CastError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message:`Передан некорректный ID пользователя: ${req.user._id}.`});
-        return;
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Передан некорректный ID пользователя: ${req.user._id}.` });
       } else if (err instanceof ValidationError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message:'Переданы некорректные данные для редактирования профиля.'});
-        return;
+        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные для редактирования профиля.' });
       } else {
         next(err);
       }
