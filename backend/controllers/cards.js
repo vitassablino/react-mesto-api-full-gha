@@ -30,7 +30,7 @@ module.exports.createCard = (req, res, next) => {
 /*  Обработка DELETE запроса /cards/:Id  */
 module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail()
+  /*     .orFail() */
     .then((card) => {
       if (!card) {
         res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Произошла ошибка:  карточка с указанным ID не обнаружена' });
