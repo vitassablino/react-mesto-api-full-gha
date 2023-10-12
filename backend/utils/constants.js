@@ -1,5 +1,12 @@
 const LINK_REGEXP = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/im;
 
+class AuthorizationError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = 401;
+  }
+}
+
 const ALLOWED_CORS = [
   'http://mesto.frontend.akula.nomoreparties.co',
   'https://mesto.frontend.akula.nomoreparties.co',
@@ -15,4 +22,5 @@ module.exports = {
   LINK_REGEXP,
   ALLOWED_CORS,
   DEFAULT_ALLOWED_METHODS,
+  AuthorizationError,
 };
