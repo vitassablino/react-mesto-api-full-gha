@@ -2,7 +2,7 @@
 
 Ссылки на проект
 
-IP-адрес 158.160.123.47
+IP 158.160.123.47
 
 Frontend https://mesto.frontend.akula.nomoreparties.co
 
