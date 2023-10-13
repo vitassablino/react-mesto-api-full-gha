@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const http2 = require('http2');
 
 const {
   ValidationError,
@@ -12,6 +11,10 @@ const User = require('../models/user');
 
 const { NODE_ENV, SECRET_KEY } = process.env;
 const { MODE_PRODUCTION, DEV_KEY } = require('../utils/config');
+
+const NotFoundError = require('../errors/notFoundError');
+const IncorrectDataError = require('../errors/incorrectDataError');
+const ConflictError = require('../errors/conflictError');
 
 /* Обработка GET запроса /users */
 module.exports.getAllUsers = (req, res, next) => {
@@ -27,10 +30,9 @@ const findUserById = (req, res, requiredData, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof DocumentNotFoundError) {
-        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь с данным ID не обнаружен' });
-        return;
+        next(new NotFoundError('Пользователь с данным ID не обнаружен'));
       } if (err instanceof CastError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Пользователь с данным ID не обнаружен' });
+        next(new NotFoundError('Пользователь с данным ID не обнаружен'));
       } else {
         next(err);
       }
@@ -65,7 +67,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       const data = user.toObject();
       delete data.password;
-      res.status(http2.constants.HTTP_STATUS_OK).send({
+      res.status(201).send({
         name: user.name,
         about: user.about,
         avatar: user.avatar,
@@ -75,9 +77,9 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof ValidationError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Произошла ошибка: ${err.name}: ${err.message}` });
+        next(new IncorrectDataError(`Произошла ошибка: ${err.name}: ${err.message}`));
       } else if (err.code === 11000) {
-        res.status(http2.constants.HTTP_STATUS_CONFLICT).send({ message: `Произошла ошибка: ${err.name}: ${err.message}` });
+        next(new ConflictError('Указанный email уже зарегистрирован'));
       } else {
         next(err);
       }
@@ -91,11 +93,11 @@ const userUpdate = (req, res, updateData, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof DocumentNotFoundError) {
-        res.status(http2.constants.HTTP_STATUS_NOT_FOUND).send({ message: `В базе данных не найден пользователь с ID: ${req.user._id}.` });
+        next(new NotFoundError(`В базе данных не найден пользователь с ID: ${req.user._id}.`));
       } else if (err instanceof CastError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: `Передан некорректный ID пользователя: ${req.user._id}.` });
+        next(new IncorrectDataError(`Передан некорректный ID пользователя: ${req.user._id}.`));
       } else if (err instanceof ValidationError) {
-        res.status(http2.constants.HTTP_STATUS_BAD_REQUEST).send({ message: 'Переданы некорректные данные для редактирования профиля.' });
+        next(new IncorrectDataError('Переданы некорректные данные для редактирования профиля.'));
       } else {
         next(err);
       }

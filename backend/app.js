@@ -19,12 +19,12 @@ mongoose.connect(DATABASE || DEFAULT_DATABASE, { authSource: 'admin' });
 
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(helmet());
-app.use(limiter);
+
 app.use(cors);
 
 app.use(requestLogger);
+app.use(limiter);
 
 app.get('/crash-test', () => {
   setTimeout(() => {

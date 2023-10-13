@@ -1,4 +1,3 @@
-const http2 = require('http2');
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
@@ -47,11 +46,11 @@ const userSchema = new mongoose.Schema({
   versionKey: false,
 
   statics: {
-    findUserByCredentials(email, password, res) {
+    findUserByCredentials(email, password) {
       return this.findOne({ email }).select('+password')
         .then((user) => {
           if (!user) {
-            res.status(http2.constants.HTTP_STATUS_UNAUTHORIZED).send({ message: 'Неверный логин или пароль' });
+            throw new AuthorizationError('Неверный логин или пароль');
           }
 
           return bcrypt.compare(password, user.password)
