@@ -9,6 +9,7 @@ const rootRouter = require('./routes/index');
 const limiter = require('./middlewares/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
+const errors = require('./middlewares/errors');
 
 const { PORT, DATABASE } = process.env;
 const { DEFAULT_PORT, DEFAULT_DATABASE } = require('./utils/config');
@@ -37,5 +38,6 @@ app.use('/', rootRouter);
 app.use(errorLogger);
 
 app.use(validationErrors());
+app.use(errors);
 
 app.listen(PORT || DEFAULT_PORT);
